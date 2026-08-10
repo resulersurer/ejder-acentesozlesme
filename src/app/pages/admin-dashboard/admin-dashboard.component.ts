@@ -58,7 +58,7 @@ export class AdminDashboardComponent implements OnInit {
     const body = encodeURIComponent(
       `Merhaba,\n\nAşağıdaki linki açarak sözleşmeyi imzalamanız gerekli:\n\n${this.shareLink}\n\nTeşekkürler.`
     );
-    window.open(`mailto:${this.contract?.email}?subject=${subject}&body=${body}`);
+    window.open(`mailto:${this.contract?.email}?subject=${encodeURIComponent(subject)}&body=${body}`);
   }
 
   protected async goBack(): Promise<void> {

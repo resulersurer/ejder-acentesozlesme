@@ -10,9 +10,20 @@ export type ContractData = {
   notes: string;
 };
 
+export type SignatureData = {
+  signerName: string;
+  signerTitle: string;
+  signDate: string;
+};
+
 export type ContractRecord = ContractData & {
   id: string;
   createdAt: string;
+  status?: 'draft' | 'signed';
+  signedAt?: string;
+  signerName?: string;
+  signerTitle?: string;
+  signDate?: string;
 };
 
 @Injectable({
@@ -35,6 +46,24 @@ export class ContractService {
 
   async getContract(id: string): Promise<ContractRecord> {
     const response = await fetch(`/api/contracts?id=${encodeURIComponent(id)}`);
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    return response.json() as Promise<ContractRecord>;
+  }
+
+  async signContract(id: string, data: SignatureData): Promise<ContractRecord> {
+    const response = await fetch(`/api/contracts?id=${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...data,
+        status: 'signed',
+        signedAt: new Date().toISOString(),
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(await response.text());

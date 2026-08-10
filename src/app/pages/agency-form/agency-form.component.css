@@ -101,6 +101,10 @@
 .signature-space {
   min-height: 80px;
   border-bottom: 1px solid rgba(79, 57, 42, 0.4);
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .signature-section {
@@ -201,6 +205,24 @@ button:disabled {
 .form-actions {
   display: grid;
   gap: 12px;
+}
+
+.success-message,
+.error-message {
+  border-radius: 16px;
+  padding: 14px 16px;
+  line-height: 1.5;
+}
+
+.success-message {
+  margin-bottom: 14px;
+  background: rgba(35, 126, 79, 0.12);
+  color: #1f6b43;
+}
+
+.error-message {
+  background: rgba(173, 44, 44, 0.1);
+  color: #8e2525;
 }
 
 @media (max-width: 1100px) {

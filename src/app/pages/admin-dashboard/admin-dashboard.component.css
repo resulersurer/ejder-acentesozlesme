@@ -64,6 +64,20 @@ h1 {
   font-size: 1.5rem;
 }
 
+.status-banner {
+  margin-bottom: 16px;
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(143, 61, 42, 0.09);
+  color: var(--brand-strong);
+  font-weight: 700;
+}
+
+.status-banner.signed {
+  background: rgba(35, 126, 79, 0.12);
+  color: #1f6b43;
+}
+
 .contract-details {
   display: grid;
   gap: 12px;

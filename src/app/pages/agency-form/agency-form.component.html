@@ -39,12 +39,12 @@ Bu sözleşme, taraflar tarafından kabul edilmiş ve imzalanmıştır.</p>
 
         <footer class="document-footer">
           <div class="signature-line">
-            <span>İmza</span>
-            <div class="signature-space"></div>
+            <span>İmzalayan</span>
+            <div class="signature-space">{{ contract.signerName || '' }}</div>
           </div>
           <div class="signature-line">
-            <span>Tarih</span>
-            <div class="signature-space"></div>
+            <span>İmza tarihi</span>
+            <div class="signature-space">{{ contract.signDate || '' }}</div>
           </div>
         </footer>
       </article>
@@ -53,10 +53,14 @@ Bu sözleşme, taraflar tarafından kabul edilmiş ve imzalanmıştır.</p>
     <aside class="signature-section">
       <div class="panel">
         <div class="panel-heading">
-          <h2>İmzalamak için</h2>
+          <h2>{{ saved ? 'Sözleşme imzalandı' : 'İmzalamak için' }}</h2>
         </div>
 
-        <form class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
+        <div *ngIf="saved" class="success-message">
+          Sözleşme kaydedildi. Son hali gönderen firma panelinde görünecek.
+        </div>
+
+        <form *ngIf="!saved" class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
           <label>
             <span>Adınız</span>
             <input formControlName="signerName" type="text" placeholder="Ad Soyad" />
@@ -76,7 +80,11 @@ Bu sözleşme, taraflar tarafından kabul edilmiş ve imzalanmıştır.</p>
             </button>
             <button class="secondary-button" type="button" (click)="printContract()">Yazdır</button>
           </div>
+
+          <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         </form>
+
+        <button *ngIf="saved" class="secondary-button" type="button" (click)="printContract()">Yazdır</button>
       </div>
     </aside>
   </div>

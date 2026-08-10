@@ -4,7 +4,7 @@
       <p class="eyebrow">Sözleşme yönetimi</p>
       <h1>Admin Panel</h1>
       <p class="hero-copy">
-        Acentaya gönderilecek linki yönet.
+        Acentaya gönderilecek linki yönet ve imzalanmış son hali takip et.
       </p>
     </div>
   </header>
@@ -17,6 +17,10 @@
     <div *ngIf="!loading && contract" class="panel">
       <div class="panel-heading">
         <h2>Sözleşme Detayları</h2>
+      </div>
+
+      <div class="status-banner" [class.signed]="contract.status === 'signed'">
+        {{ contract.status === 'signed' ? 'Müşteri imzaladı' : 'Müşteri imzası bekleniyor' }}
       </div>
 
       <div class="contract-details">
@@ -39,6 +43,14 @@
         <div class="detail-row">
           <span>Telefon:</span>
           <strong>{{ contract.phone }}</strong>
+        </div>
+        <div *ngIf="contract.status === 'signed'" class="detail-row">
+          <span>İmzalayan:</span>
+          <strong>{{ contract.signerName }} - {{ contract.signerTitle }}</strong>
+        </div>
+        <div *ngIf="contract.status === 'signed'" class="detail-row">
+          <span>İmza tarihi:</span>
+          <strong>{{ contract.signDate }}</strong>
         </div>
       </div>
 

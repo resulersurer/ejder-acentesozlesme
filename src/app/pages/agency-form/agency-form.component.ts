@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ContractService, ContractRecord } from '../../contract.service';
+import { ContractService, ContractRecord, SignatureData } from '../../contract.service';
 
 @Component({
   selector: 'app-agency-form',
@@ -21,6 +21,8 @@ export class AgencyFormComponent implements OnInit {
   protected contractId = '';
   protected loading = true;
   protected saving = false;
+  protected saved = false;
+  protected errorMessage = '';
 
   protected readonly form = this.fb.nonNullable.group({
     signerName: [''],
@@ -39,6 +41,7 @@ export class AgencyFormComponent implements OnInit {
 
       try {
         this.contract = await this.contractService.getContract(this.contractId);
+        this.saved = this.contract.status === 'signed';
       } catch {
         await this.router.navigate(['/']);
       } finally {
@@ -49,13 +52,14 @@ export class AgencyFormComponent implements OnInit {
 
   protected async submitSignature(): Promise<void> {
     this.saving = true;
+    this.errorMessage = '';
 
     try {
-      // TODO: Save signature and send confirmation to sender
-      alert('Sözleşme imzalandı ve gönderene bildirim gönderildi.');
-      await this.router.navigate(['/']);
+      const signature = this.form.getRawValue() as SignatureData;
+      this.contract = await this.contractService.signContract(this.contractId, signature);
+      this.saved = true;
     } catch (error) {
-      alert('Hata oluştu');
+      this.errorMessage = error instanceof Error ? error.message : 'Hata oluştu';
     } finally {
       this.saving = false;
     }
