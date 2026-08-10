@@ -21,6 +21,7 @@ export type SignatureData = {
   signerName: string;
   signerTitle: string;
   signDate: string;
+  signatureImage: string;
 };
 
 export type ContractRecord = ContractData & {
@@ -32,6 +33,7 @@ export type ContractRecord = ContractData & {
   signerName?: string;
   signerTitle?: string;
   signDate?: string;
+  signatureImage?: string;
 };
 
 @Injectable({

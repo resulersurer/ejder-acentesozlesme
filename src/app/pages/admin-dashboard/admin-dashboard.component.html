@@ -54,6 +54,13 @@
         </div>
       </div>
 
+      <div *ngIf="contract.signatureImage" class="signature-preview-section">
+        <h3>Müşteri imzası</h3>
+        <div class="signature-preview">
+          <img [src]="contract.signatureImage" alt="Müşteri imzası" />
+        </div>
+      </div>
+
       <div class="document-section">
         <h3>Sözleşme metni</h3>
         <article class="document-preview">{{ contract.contractText || contract.notes }}</article>

@@ -1,0 +1,48 @@
+<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Sözleşme şablonu</p>
+      <h1>Metni düzenle</h1>
+      <p class="header-copy">
+        Sözleşme metnini burada güncelle. Değişkenleri çift süslü parantezle kullan: {{ '{{contractNo}}' }}.
+      </p>
+    </div>
+  </header>
+
+  <main class="editor-layout" [formGroup]="form">
+    <section class="panel editor-panel">
+      <div class="panel-heading">
+        <h2>Şablon metni</h2>
+        <div class="actions">
+          <button class="secondary-button" type="button" (click)="resetTemplate()">Varsayılana dön</button>
+          <button class="primary-button" type="button" (click)="saveTemplate()">Kaydet</button>
+        </div>
+      </div>
+
+      <textarea formControlName="templateText" rows="28" spellcheck="false"></textarea>
+
+      <div *ngIf="savedMessage" class="success-message">{{ savedMessage }}</div>
+    </section>
+
+    <aside class="panel variables-panel">
+      <div class="panel-heading">
+        <h2>Kullanılabilir alanlar</h2>
+      </div>
+
+      <div class="variable-list">
+        <button *ngFor="let variable of variables" class="variable-token" type="button" (click)="copyVariable(variable.key)">
+          <span>{{ variable.label }}</span>
+          <strong>{{ '{{' + variable.key + '}}' }}</strong>
+        </button>
+      </div>
+    </aside>
+
+    <section class="panel preview-panel">
+      <div class="panel-heading">
+        <h2>Önizleme</h2>
+      </div>
+
+      <article class="document-preview">{{ previewText }}</article>
+    </section>
+  </main>
+</div>

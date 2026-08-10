@@ -112,6 +112,31 @@ h1 {
   border-bottom: 1px solid rgba(79, 57, 42, 0.12);
 }
 
+.signature-preview-section {
+  margin-top: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(79, 57, 42, 0.12);
+}
+
+.signature-preview-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.signature-preview {
+  border: 1px solid rgba(79, 57, 42, 0.14);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.signature-preview img {
+  display: block;
+  max-width: 340px;
+  max-height: 120px;
+  object-fit: contain;
+}
+
 .document-section h3 {
   font-size: 1.1rem;
   margin-bottom: 12px;

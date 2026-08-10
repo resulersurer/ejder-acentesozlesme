@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
       <a class="nav-brand" routerLink="/">Ejder Acenta Sözleşme</a>
       <div class="nav-links">
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/template" routerLinkActive="active">Sözleşme Metni</a>
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Yeni Sözleşme</a>
       </div>
     </nav>
@@ -22,8 +23,8 @@ import { RouterModule } from '@angular/router';
         align-items: center;
         justify-content: space-between;
         padding: 0 24px;
-        height: 56px;
-        background: rgba(255, 255, 255, 0.7);
+        min-height: 56px;
+        background: rgba(255, 255, 255, 0.84);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(54, 39, 20, 0.1);
         position: sticky;
@@ -43,6 +44,8 @@ import { RouterModule } from '@angular/router';
       .nav-links {
         display: flex;
         gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
       }
 
       .nav-links a {
@@ -67,7 +70,7 @@ import { RouterModule } from '@angular/router';
         font-weight: 600;
       }
 
-      @media (max-width: 560px) {
+      @media (max-width: 680px) {
         .topnav {
           align-items: start;
           flex-direction: column;
@@ -78,10 +81,12 @@ import { RouterModule } from '@angular/router';
 
         .nav-links {
           width: 100%;
+          justify-content: start;
         }
 
         .nav-links a {
-          flex: 1;
+          flex: 1 1 auto;
+          text-align: center;
         }
       }
     `,

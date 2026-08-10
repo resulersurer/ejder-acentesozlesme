@@ -35,6 +35,12 @@
             <span>İmza tarihi</span>
             <div class="signature-space">{{ contract.signDate || '' }}</div>
           </div>
+          <div class="signature-line signature-image-line">
+            <span>Elektronik imza</span>
+            <div class="signature-space image-space">
+              <img *ngIf="contract.signatureImage" [src]="contract.signatureImage" alt="Müşteri imzası" />
+            </div>
+          </div>
         </footer>
       </article>
     </section>
@@ -62,6 +68,22 @@
             <span>İmza tarihi</span>
             <input formControlName="signDate" type="date" />
           </label>
+
+          <div class="signature-pad">
+            <div class="signature-pad-heading">
+              <span>İmza</span>
+              <button class="text-button" type="button" (click)="clearSignature()">Temizle</button>
+            </div>
+            <canvas
+              #signatureCanvas
+              (pointerdown)="beginSignature($event)"
+              (pointermove)="drawSignature($event)"
+              (pointerup)="endSignature($event)"
+              (pointercancel)="endSignature($event)"
+              (pointerleave)="endSignature($event)"
+              aria-label="İmza alanı"
+            ></canvas>
+          </div>
 
           <div class="form-actions">
             <button class="primary-button" type="submit" [disabled]="saving">

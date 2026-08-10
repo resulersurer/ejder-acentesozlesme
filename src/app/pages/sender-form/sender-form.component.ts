@@ -3,7 +3,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContractData, ContractService } from '../../contract.service';
-import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
+import { CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
+import { getContractTemplate } from '../../contract-template-storage';
 
 type TemplatePart =
   | { type: 'text'; value: string }
@@ -28,8 +29,9 @@ export class SenderFormComponent {
 
   protected saving = false;
   protected errorMessage = '';
+  protected readonly templateText = getContractTemplate();
   protected readonly variables = CONTRACT_VARIABLES;
-  protected readonly templateLines: TemplateLine[] = CONTRACT_TEMPLATE.split('\n').map((line) => ({
+  protected readonly templateLines: TemplateLine[] = this.templateText.split('\n').map((line) => ({
     className: this.getLineClass(line),
     parts: this.parseLine(line),
   }));
@@ -41,7 +43,7 @@ export class SenderFormComponent {
   protected get renderedContractText(): string {
     const values = this.form.getRawValue() as Record<string, string>;
 
-    return CONTRACT_TEMPLATE.replace(/\{\{(\w+)\}\}/g, (_match, key: ContractVariableKey) => {
+    return this.templateText.replace(/\{\{(\w+)\}\}/g, (_match, key: ContractVariableKey) => {
       const value = values[key]?.trim();
       return value || `[${this.getVariableLabel(key)}]`;
     });
@@ -72,7 +74,7 @@ export class SenderFormComponent {
         phone: values['customerContactInfo'],
         notes: values['tourCodeName'],
         contractText: this.renderedContractText,
-        contractTemplate: CONTRACT_TEMPLATE,
+        contractTemplate: this.templateText,
         variables: this.extractVariables(values),
         contractNo: values['contractNo'],
         contractDate: values['contractDate'],
@@ -121,7 +123,12 @@ export class SenderFormComponent {
         parts.push({ type: 'text', value: line.slice(lastIndex, match.index) });
       }
 
-      parts.push({ type: 'field', key: match[1] as ContractVariableKey });
+      const key = match[1] as ContractVariableKey;
+      if (CONTRACT_VARIABLES.some((field) => field.key === key)) {
+        parts.push({ type: 'field', key });
+      } else {
+        parts.push({ type: 'text', value: match[0] });
+      }
       lastIndex = match.index + match[0].length;
     }
 
