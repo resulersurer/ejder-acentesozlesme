@@ -32,14 +32,18 @@ export default async function handler(req: any, res: any) {
         return;
       }
 
-      const rows = await sql`SELECT payload FROM contract_drafts WHERE id = ${id} LIMIT 1`;
+      const rows = await sql`SELECT payload, created_at FROM contract_drafts WHERE id = ${id} LIMIT 1`;
 
       if (rows.length === 0) {
         res.status(404).json({ message: 'draft not found' });
         return;
       }
 
-      res.status(200).json(rows[0].payload);
+      res.status(200).json({
+        id,
+        ...rows[0].payload,
+        createdAt: rows[0].created_at,
+      });
       return;
     }
 

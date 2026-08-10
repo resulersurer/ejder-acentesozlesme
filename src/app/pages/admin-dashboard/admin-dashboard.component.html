@@ -1,0 +1,63 @@
+<div class="page-shell">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Sözleşme yönetimi</p>
+      <h1>Admin Panel</h1>
+      <p class="hero-copy">
+        Acentaya gönderilecek linki yönet.
+      </p>
+    </div>
+  </header>
+
+  <main class="layout-center">
+    <div *ngIf="loading" class="panel">
+      <p>Yükleniyor...</p>
+    </div>
+
+    <div *ngIf="!loading && contract" class="panel">
+      <div class="panel-heading">
+        <h2>Sözleşme Detayları</h2>
+      </div>
+
+      <div class="contract-details">
+        <div class="detail-row">
+          <span>Gönderen:</span>
+          <strong>{{ contract.senderName }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Acente:</span>
+          <strong>{{ contract.agencyName }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Yetkilisi:</span>
+          <strong>{{ contract.agencyContact }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>E-posta:</span>
+          <strong>{{ contract.email }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Telefon:</span>
+          <strong>{{ contract.phone }}</strong>
+        </div>
+      </div>
+
+      <div class="share-section">
+        <h3>Acentaya gönderilecek link</h3>
+        <div class="share-box">
+          <textarea readonly rows="3" [value]="shareLink"></textarea>
+          <div class="action-buttons">
+            <button class="primary-button" (click)="copyToClipboard()">
+              {{ linkCopied ? 'Kopyalandı!' : 'Linki kopyala' }}
+            </button>
+            <button class="secondary-button" (click)="sendEmail()">E-posta ile gönder</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button class="ghost-button" (click)="goBack()">Yeni sözleşme</button>
+      </div>
+    </div>
+  </main>
+</div>

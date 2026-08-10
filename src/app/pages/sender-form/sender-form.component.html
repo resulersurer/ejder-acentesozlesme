@@ -1,0 +1,67 @@
+<div class="page-shell">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Kapalı grup sözleşmesi</p>
+      <h1>Sözleşme gönder</h1>
+      <p class="hero-copy">
+        Bilgilerini gir, acenta için hazırla ve acentaya açmak için link oluştur.
+      </p>
+    </div>
+  </header>
+
+  <main class="layout-center">
+    <section class="panel">
+      <div class="panel-heading">
+        <h2>Bilgilerin</h2>
+      </div>
+
+      <form class="stack" [formGroup]="form" (ngSubmit)="submitForm()">
+        <div class="field-grid two-up">
+          <label>
+            <span>Gönderen adı</span>
+            <input formControlName="senderName" type="text" placeholder="Ad Soyad / Şirket" />
+          </label>
+          <label>
+            <span>Acente adı</span>
+            <input formControlName="agencyName" type="text" placeholder="Acenta adı" />
+          </label>
+        </div>
+
+        <div class="field-grid two-up">
+          <label>
+            <span>Acente yetkilisi</span>
+            <input formControlName="agencyContact" type="text" placeholder="Yetkili kişi" />
+          </label>
+          <label>
+            <span>Yürürlük tarihi</span>
+            <input formControlName="effectiveDate" type="date" />
+          </label>
+        </div>
+
+        <div class="field-grid two-up">
+          <label>
+            <span>E-posta</span>
+            <input formControlName="email" type="email" placeholder="ornek@firma.com" />
+          </label>
+          <label>
+            <span>Telefon</span>
+            <input formControlName="phone" type="tel" placeholder="05xx xxx xx xx" />
+          </label>
+        </div>
+
+        <label>
+          <span>Ek not</span>
+          <textarea formControlName="notes" rows="6" placeholder="İsteğe bağlı not"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button class="primary-button" type="submit" [disabled]="saving">
+            {{ saving ? 'Gönderiliyor...' : 'Gönder ve link oluştur' }}
+          </button>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </form>
+    </section>
+  </main>
+</div>
