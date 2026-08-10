@@ -55,5 +55,8 @@
       }
     }
   },
-  "defaultProject": "ejder-acentasozlesme"
+  "defaultProject": "ejder-acentasozlesme",
+  "cli": {
+    "analytics": "8c655101-bd30-4018-a570-3ab85e22d904"
+  }
 }
