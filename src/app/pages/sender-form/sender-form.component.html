@@ -21,7 +21,7 @@
             <span *ngIf="part.type === 'text'">{{ part.value }}</span>
 
             <span
-              *ngIf="part.type === 'field'"
+              *ngIf="part.type === 'field' && isFillable(part.key)"
               class="inline-field"
               [class.required]="isRequired(part.key)"
               [class.optional]="!isRequired(part.key)"
@@ -39,6 +39,10 @@
                   [attr.aria-label]="getVariableLabel(part.key)"
                 />
               </label>
+            </span>
+
+            <span *ngIf="part.type === 'field' && !isFillable(part.key)" class="locked-field">
+              {{ getVariableDisplayValue(part.key) }}
             </span>
           </ng-container>
         </div>

@@ -193,6 +193,19 @@ h1 {
   color: #66584c;
 }
 
+.locked-field {
+  display: inline-block;
+  margin: 1px 3px;
+  border-radius: 5px;
+  padding: 3px 6px;
+  background: rgba(79, 57, 42, 0.08);
+  color: #17120f;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 10.5pt;
+  font-weight: 700;
+  vertical-align: baseline;
+}
+
 .submit-panel {
   display: grid;
   gap: 12px;

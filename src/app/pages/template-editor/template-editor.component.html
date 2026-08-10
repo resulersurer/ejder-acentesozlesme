@@ -30,10 +30,41 @@
       </div>
 
       <div class="variable-list">
-        <button *ngFor="let variable of variables" class="variable-token" type="button" (click)="copyVariable(variable.key)">
-          <span>{{ variable.label }}</span>
-          <strong>{{ '{{' + variable.key + '}}' }}</strong>
-        </button>
+        <article *ngFor="let variable of variables" class="variable-card">
+          <button class="variable-token" type="button" (click)="copyVariable(variable.key)">
+            <span>{{ variable.label }}</span>
+            <strong>{{ '{{' + variable.key + '}}' }}</strong>
+          </button>
+
+          <div class="setting-row">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="settings[variable.key].fillable"
+                (change)="updateFillable(variable.key, $event)"
+              />
+              Doldurulabilir
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="settings[variable.key].required"
+                (change)="updateRequired(variable.key, $event)"
+              />
+              Zorunlu
+            </label>
+          </div>
+
+          <label class="default-value-field">
+            <span>Varsayılan değer</span>
+            <input
+              type="text"
+              [value]="settings[variable.key].defaultValue"
+              [placeholder]="variable.placeholder"
+              (input)="updateDefaultValue(variable.key, $event)"
+            />
+          </label>
+        </article>
       </div>
     </aside>
 

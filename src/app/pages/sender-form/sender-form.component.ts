@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContractData, ContractService } from '../../contract.service';
 import { CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
-import { getContractTemplate } from '../../contract-template-storage';
+import { getContractTemplate, getVariableSettings } from '../../contract-template-storage';
 
 type TemplatePart =
   | { type: 'text'; value: string }
@@ -30,6 +30,7 @@ export class SenderFormComponent {
   protected saving = false;
   protected errorMessage = '';
   protected readonly templateText = getContractTemplate();
+  protected readonly variableSettings = getVariableSettings();
   protected readonly variables = CONTRACT_VARIABLES;
   protected readonly templateLines: TemplateLine[] = this.templateText.split('\n').map((line) => ({
     className: this.getLineClass(line),
@@ -37,7 +38,9 @@ export class SenderFormComponent {
   }));
 
   protected readonly form = this.fb.nonNullable.group({
-    ...Object.fromEntries(CONTRACT_VARIABLES.map((field) => [field.key, ['']])),
+    ...Object.fromEntries(
+      CONTRACT_VARIABLES.map((field) => [field.key, [this.getInitialValue(field.key)]])
+    ),
   });
 
   protected get renderedContractText(): string {
@@ -51,7 +54,7 @@ export class SenderFormComponent {
 
   protected get missingRequiredCount(): number {
     const values = this.form.getRawValue() as Record<string, string>;
-    return CONTRACT_VARIABLES.filter((field) => field.required && !values[field.key]?.trim()).length;
+    return CONTRACT_VARIABLES.filter((field) => this.isRequired(field.key) && !values[field.key]?.trim()).length;
   }
 
   protected async submitForm(): Promise<void> {
@@ -100,16 +103,49 @@ export class SenderFormComponent {
   }
 
   protected isRequired(key: ContractVariableKey): boolean {
-    return Boolean(CONTRACT_VARIABLES.find((field) => field.key === key)?.required);
+    return Boolean(this.variableSettings[key]?.required);
+  }
+
+  protected isFillable(key: ContractVariableKey): boolean {
+    return Boolean(this.variableSettings[key]?.fillable);
   }
 
   protected isMissing(key: ContractVariableKey): boolean {
     const value = (this.form.getRawValue() as Record<string, string>)[key];
-    return this.isRequired(key) && !value?.trim();
+    return this.isFillable(key) && this.isRequired(key) && !value?.trim();
+  }
+
+  protected getVariableDisplayValue(key: ContractVariableKey): string {
+    const value = (this.form.getRawValue() as Record<string, string>)[key]?.trim();
+    return value || this.getVariablePlaceholder(key);
   }
 
   private extractVariables(values: Record<string, string>): Record<string, string> {
     return Object.fromEntries(CONTRACT_VARIABLES.map((field) => [field.key, values[field.key] ?? '']));
+  }
+
+  private getInitialValue(key: ContractVariableKey): string {
+    if (key === 'contractNo') {
+      return this.generateContractNo();
+    }
+
+    return this.variableSettings[key]?.defaultValue ?? '';
+  }
+
+  private generateContractNo(): string {
+    const now = new Date();
+    const date = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+    ].join('');
+    const time = [
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0'),
+      String(now.getSeconds()).padStart(2, '0'),
+    ].join('');
+
+    return `KG-${date}-${time}`;
   }
 
   private parseLine(line: string): TemplatePart[] {

@@ -73,11 +73,13 @@ h1 {
   flex-wrap: wrap;
 }
 
+input,
 textarea,
 button {
   font: inherit;
 }
 
+input,
 textarea {
   width: 100%;
   min-height: 720px;
@@ -90,6 +92,12 @@ textarea {
   font-size: 0.92rem;
   line-height: 1.55;
   resize: vertical;
+}
+
+input {
+  min-height: auto;
+  padding: 10px 12px;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 textarea:focus {
@@ -130,17 +138,25 @@ button:hover {
 
 .variable-list {
   display: grid;
-  gap: 8px;
+  gap: 12px;
+}
+
+.variable-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(79, 57, 42, 0.14);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.64);
 }
 
 .variable-token {
   display: grid;
   gap: 4px;
   width: 100%;
-  border: 1px solid rgba(79, 57, 42, 0.14);
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.72);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(143, 61, 42, 0.07);
   color: var(--text);
   text-align: left;
 }
@@ -155,6 +171,39 @@ button:hover {
   color: var(--brand-strong);
   font-family: 'Courier New', Consolas, monospace;
   font-size: 0.9rem;
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.setting-row label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.setting-row input {
+  width: auto;
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  accent-color: var(--brand-strong);
+}
+
+.default-value-field {
+  display: grid;
+  gap: 6px;
+}
+
+.default-value-field span {
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .preview-panel {
