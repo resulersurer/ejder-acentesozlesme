@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-type DraftPayload = Record<string, unknown>;
+const { neon } = require('@neondatabase/serverless');
 
 const getSql = () => {
   const databaseUrl = process.env.DATABASE_URL;
@@ -12,15 +10,15 @@ const getSql = () => {
   return neon(databaseUrl);
 };
 
-const readBody = (body: unknown): DraftPayload => {
+const readBody = (body) => {
   if (typeof body === 'string') {
-    return JSON.parse(body) as DraftPayload;
+    return JSON.parse(body);
   }
 
-  return (body ?? {}) as DraftPayload;
+  return body ?? {};
 };
 
-const ensureTable = async (sql: ReturnType<typeof neon>) => {
+const ensureTable = async (sql) => {
   await sql`
     CREATE TABLE IF NOT EXISTS contract_drafts (
       id          TEXT PRIMARY KEY,
@@ -31,7 +29,7 @@ const ensureTable = async (sql: ReturnType<typeof neon>) => {
   `;
 };
 
-export default async function handler(req: any, res: any) {
+const handler = async (req, res) => {
   try {
     const sql = getSql();
     await ensureTable(sql);
@@ -127,6 +125,14 @@ export default async function handler(req: any, res: any) {
     res.status(405).json({ message: 'method not allowed' });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unexpected error';
+    console.error('[api/contracts] request failed', {
+      method: req.method,
+      url: req.url,
+      message,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     res.status(500).json({ message });
   }
-}
+};
+
+module.exports = handler;
