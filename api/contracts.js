@@ -19,14 +19,22 @@ const readBody = (body) => {
 };
 
 const ensureTable = async (sql) => {
-  await sql`
-    CREATE TABLE IF NOT EXISTS contract_drafts (
-      id          TEXT PRIMARY KEY,
-      payload     JSONB NOT NULL DEFAULT '{}',
-      created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-      updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `;
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS contract_drafts (
+        id          TEXT PRIMARY KEY,
+        payload     JSONB NOT NULL DEFAULT '{}',
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+
+    if (!message.includes('pg_type_typname_nsp_index')) {
+      throw error;
+    }
+  }
 };
 
 const handler = async (req, res) => {
