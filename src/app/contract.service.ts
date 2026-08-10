@@ -96,4 +96,15 @@ export class ContractService {
 
     return response.json() as Promise<ContractRecord>;
   }
+
+  async deleteContract(id: string, pin: string): Promise<void> {
+    const response = await fetch(`/api/contracts?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'X-Admin-Delete-Pin': pin },
+    });
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+  }
 }

@@ -86,6 +86,9 @@
           <button class="ghost-button" type="button" (click)="copyShareLink(contract)">
             {{ copiedId() === contract.id ? 'Kopyalandı' : 'Müşteri linki' }}
           </button>
+          <button class="danger-button" type="button" (click)="deleteContract(contract)" [disabled]="deletingId() === contract.id">
+            {{ deletingId() === contract.id ? 'Siliniyor...' : 'Sil' }}
+          </button>
         </div>
       </article>
     </div>

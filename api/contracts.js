@@ -129,7 +129,42 @@ const handler = async (req, res) => {
       return;
     }
 
-    res.setHeader('Allow', ['GET', 'POST', 'PATCH']);
+    if (req.method === 'DELETE') {
+      const id = typeof req.query?.id === 'string' ? req.query.id : '';
+      const adminDeletePin = process.env.ADMIN_DELETE_PIN;
+      const requestPin = req.headers['x-admin-delete-pin'];
+
+      if (!id) {
+        res.status(400).json({ message: 'id is required' });
+        return;
+      }
+
+      if (!adminDeletePin) {
+        res.status(403).json({ message: 'ADMIN_DELETE_PIN is not configured' });
+        return;
+      }
+
+      if (requestPin !== adminDeletePin) {
+        res.status(403).json({ message: 'delete pin is invalid' });
+        return;
+      }
+
+      const rows = await sql`
+        DELETE FROM contract_drafts
+        WHERE id = ${id}
+        RETURNING id
+      `;
+
+      if (rows.length === 0) {
+        res.status(404).json({ message: 'draft not found' });
+        return;
+      }
+
+      res.status(204).end();
+      return;
+    }
+
+    res.setHeader('Allow', ['GET', 'POST', 'PATCH', 'DELETE']);
     res.status(405).json({ message: 'method not allowed' });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unexpected error';

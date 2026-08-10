@@ -18,6 +18,7 @@ export class ContractsDashboardComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly copiedId = signal('');
+  protected readonly deletingId = signal('');
 
   protected readonly signedCount = computed(
     () => this.contracts().filter((contract) => contract.status === 'signed').length
@@ -105,6 +106,33 @@ export class ContractsDashboardComponent implements OnInit {
       }, 1800);
     } catch {
       this.errorMessage.set('Link kopyalanamadı');
+    }
+  }
+
+  protected async deleteContract(contract: ContractRecord): Promise<void> {
+    const label = contract.contractNo || contract.customerTitle || contract.id;
+    const confirmed = window.confirm(`${label} sözleşmesini kalıcı olarak silmek istiyor musunuz?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    const pin = window.prompt('Silme işlemi için admin PIN girin.');
+
+    if (!pin) {
+      return;
+    }
+
+    this.deletingId.set(contract.id);
+    this.errorMessage.set('');
+
+    try {
+      await this.contractService.deleteContract(contract.id, pin);
+      this.contracts.update((contracts) => contracts.filter((item) => item.id !== contract.id));
+    } catch (error) {
+      this.errorMessage.set(error instanceof Error ? error.message : 'Sözleşme silinemedi');
+    } finally {
+      this.deletingId.set('');
     }
   }
 

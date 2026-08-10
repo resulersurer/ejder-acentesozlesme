@@ -167,6 +167,12 @@ button:disabled {
   border: 1px solid rgba(143, 61, 42, 0.18);
 }
 
+.danger-button {
+  background: rgba(164, 36, 36, 0.08);
+  color: #8e2525;
+  border: 1px solid rgba(164, 36, 36, 0.2);
+}
+
 .contract-list {
   display: grid;
   gap: 12px;
