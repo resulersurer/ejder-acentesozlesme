@@ -3,7 +3,12 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from 
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContractService, ContractRecord, SignatureData } from '../../contract.service';
-import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
+import {
+  CONTRACT_TEMPLATE,
+  CONTRACT_VARIABLES,
+  CONTRACT_VARIABLE_OWNERS,
+  ContractVariableKey,
+} from '../../contract-template';
 
 type TemplatePart =
   | { type: 'text'; value: string }
@@ -133,7 +138,11 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   protected isRequired(key: ContractVariableKey): boolean {
     const setting = this.contract?.variableSettings?.[key];
     const fallback = CONTRACT_VARIABLES.find((field) => field.key === key)?.required ?? false;
-    return setting?.required ?? fallback;
+    return this.isCustomerOwned(key) && (setting?.required ?? fallback);
+  }
+
+  protected isCustomerOwned(key: ContractVariableKey): boolean {
+    return CONTRACT_VARIABLE_OWNERS[key] === 'customer';
   }
 
   protected isMissing(key: ContractVariableKey): boolean {
@@ -261,7 +270,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
       const value = this.getStoredVariableValue(key).trim();
       const fillable = this.contract.variableSettings?.[key]?.fillable ?? true;
 
-      if (known && fillable && !value) {
+      if (known && this.isCustomerOwned(key) && fillable && !value) {
         keys.add(key);
       }
     }

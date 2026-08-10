@@ -153,3 +153,39 @@ export const CONTRACT_VARIABLES = [
 ] as const;
 
 export type ContractVariableKey = (typeof CONTRACT_VARIABLES)[number]['key'];
+
+export type ContractVariableOwner = 'sender' | 'customer';
+
+// Keeps the sender/customer responsibility separate from the editable template settings.
+export const CONTRACT_VARIABLE_OWNERS: Record<ContractVariableKey, ContractVariableOwner> = {
+  contractNo: 'sender',
+  contractDate: 'sender',
+  tourCodeName: 'sender',
+  tourStartDate: 'sender',
+  tourEndDate: 'sender',
+  destination: 'sender',
+  customerTitle: 'customer',
+  customerTaxInfo: 'customer',
+  customerRegistryInfo: 'customer',
+  customerAddress: 'customer',
+  customerContactInfo: 'customer',
+  customerRepresentative: 'customer',
+  customerRole: 'customer',
+  estimatedPax: 'customer',
+  guaranteedPax: 'customer',
+  minimumPax: 'customer',
+  maximumPax: 'customer',
+  participantListDeadline: 'customer',
+  minimumGroupPrice: 'sender',
+  totalContractPrice: 'sender',
+  currency: 'sender',
+  cancellationDeadline: 'sender',
+  paymentPlan: 'sender',
+  exchangeRateType: 'sender',
+  exchangeRateTime: 'sender',
+  legalFees: 'sender',
+  ejderKep: 'sender',
+  ejderAuthorizedName: 'sender',
+  customerAuthorizedName: 'customer',
+  pageCount: 'sender',
+};

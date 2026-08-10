@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContractData, ContractService } from '../../contract.service';
-import { CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
+import { CONTRACT_VARIABLES, CONTRACT_VARIABLE_OWNERS, ContractVariableKey } from '../../contract-template';
 import { getContractTemplate, getVariableSettings } from '../../contract-template-storage';
 
 type TemplatePart =
@@ -104,7 +104,11 @@ export class SenderFormComponent {
   }
 
   protected isRequired(key: ContractVariableKey): boolean {
-    return Boolean(this.variableSettings[key]?.required);
+    return this.isSenderField(key) && Boolean(this.variableSettings[key]?.required);
+  }
+
+  protected isSenderField(key: ContractVariableKey): boolean {
+    return CONTRACT_VARIABLE_OWNERS[key] === 'sender';
   }
 
   protected isFillable(key: ContractVariableKey): boolean {
