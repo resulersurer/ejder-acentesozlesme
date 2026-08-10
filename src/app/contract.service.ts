@@ -19,6 +19,7 @@ export type SignatureData = {
 export type ContractRecord = ContractData & {
   id: string;
   createdAt: string;
+  updatedAt?: string;
   status?: 'draft' | 'signed';
   signedAt?: string;
   signerName?: string;
@@ -52,6 +53,16 @@ export class ContractService {
     }
 
     return response.json() as Promise<ContractRecord>;
+  }
+
+  async listContracts(): Promise<ContractRecord[]> {
+    const response = await fetch('/api/contracts');
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    return response.json() as Promise<ContractRecord[]>;
   }
 
   async signContract(id: string, data: SignatureData): Promise<ContractRecord> {

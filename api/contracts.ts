@@ -40,11 +40,30 @@ export default async function handler(req: any, res: any) {
       const id = typeof req.query?.id === 'string' ? req.query.id : '';
 
       if (!id) {
-        res.status(400).json({ message: 'id is required' });
+        const rows = await sql`
+          SELECT id, payload, created_at, updated_at
+          FROM contract_drafts
+          ORDER BY updated_at DESC
+          LIMIT 100
+        `;
+
+        res.status(200).json(
+          rows.map((row) => ({
+            id: row.id,
+            ...row.payload,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          }))
+        );
         return;
       }
 
-      const rows = await sql`SELECT payload, created_at FROM contract_drafts WHERE id = ${id} LIMIT 1`;
+      const rows = await sql`
+        SELECT payload, created_at, updated_at
+        FROM contract_drafts
+        WHERE id = ${id}
+        LIMIT 1
+      `;
 
       if (rows.length === 0) {
         res.status(404).json({ message: 'draft not found' });
@@ -55,6 +74,7 @@ export default async function handler(req: any, res: any) {
         id,
         ...rows[0].payload,
         createdAt: rows[0].created_at,
+        updatedAt: rows[0].updated_at,
       });
       return;
     }
@@ -86,7 +106,7 @@ export default async function handler(req: any, res: any) {
         SET payload = payload || ${JSON.stringify(payload)}::jsonb,
             updated_at = now()
         WHERE id = ${id}
-        RETURNING payload, created_at
+        RETURNING payload, created_at, updated_at
       `;
 
       if (rows.length === 0) {
@@ -98,6 +118,7 @@ export default async function handler(req: any, res: any) {
         id,
         ...rows[0].payload,
         createdAt: rows[0].created_at,
+        updatedAt: rows[0].updated_at,
       });
       return;
     }

@@ -1,5 +1,11 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/ejder-acentasozlesme"
+  "outputDirectory": "dist/ejder-acentasozlesme",
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

@@ -1,0 +1,90 @@
+<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Sözleşme arşivi</p>
+      <h1>Dashboard</h1>
+      <p class="header-copy">Oluşturulan sözleşmeleri, imza durumlarını ve müşteri linklerini tek ekrandan takip et.</p>
+    </div>
+
+    <a class="primary-link" routerLink="/">Yeni sözleşme</a>
+  </header>
+
+  <section class="summary-grid">
+    <div class="summary-item">
+      <span>Toplam</span>
+      <strong>{{ contracts().length }}</strong>
+    </div>
+    <div class="summary-item signed">
+      <span>İmzalanan</span>
+      <strong>{{ signedCount() }}</strong>
+    </div>
+    <div class="summary-item pending">
+      <span>Bekleyen</span>
+      <strong>{{ pendingCount() }}</strong>
+    </div>
+  </section>
+
+  <main class="panel">
+    <div class="toolbar">
+      <label class="search-field">
+        <span>Arama</span>
+        <input type="search" placeholder="Acente, yetkili, e-posta..." [value]="query()" (input)="updateQuery($event)" />
+      </label>
+
+      <button class="secondary-button" type="button" (click)="loadContracts()" [disabled]="loading()">
+        {{ loading() ? 'Yenileniyor...' : 'Yenile' }}
+      </button>
+    </div>
+
+    <div *ngIf="errorMessage()" class="error-message">{{ errorMessage() }}</div>
+
+    <div *ngIf="loading()" class="empty-state">Sözleşmeler yükleniyor...</div>
+
+    <div *ngIf="!loading() && filteredContracts().length === 0" class="empty-state">
+      Henüz gösterilecek sözleşme yok.
+    </div>
+
+    <div *ngIf="!loading() && filteredContracts().length > 0" class="contract-list">
+      <article *ngFor="let contract of filteredContracts()" class="contract-row">
+        <div class="row-main">
+          <div class="title-line">
+            <h2>{{ contract.agencyName || 'İsimsiz acente' }}</h2>
+            <span class="status-pill" [class.signed]="contract.status === 'signed'">
+              {{ getStatusLabel(contract) }}
+            </span>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <span>Gönderen</span>
+              <strong>{{ contract.senderName || '-' }}</strong>
+            </div>
+            <div>
+              <span>Yetkili</span>
+              <strong>{{ contract.agencyContact || '-' }}</strong>
+            </div>
+            <div>
+              <span>E-posta</span>
+              <strong>{{ contract.email || '-' }}</strong>
+            </div>
+            <div>
+              <span>Son işlem</span>
+              <strong>{{ formatDate(contract.updatedAt || contract.createdAt) }}</strong>
+            </div>
+          </div>
+
+          <div *ngIf="contract.status === 'signed'" class="signed-line">
+            {{ contract.signerName || 'İmzalayan' }} tarafından {{ contract.signDate || 'tarih belirtilmeden' }} imzalandı.
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <a class="secondary-link" [routerLink]="['/admin', contract.id]">Detay</a>
+          <button class="ghost-button" type="button" (click)="copyShareLink(contract)">
+            {{ copiedId() === contract.id ? 'Kopyalandı' : 'Müşteri linki' }}
+          </button>
+        </div>
+      </article>
+    </div>
+  </main>
+</div>
