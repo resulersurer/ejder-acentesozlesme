@@ -1,6 +1,12 @@
 <div class="page-shell">
   <div *ngIf="loading" class="loading">Yükleniyor...</div>
 
+  <div *ngIf="!loading && !contract" class="content single">
+    <section class="panel">
+      <div class="error-message">{{ errorMessage || 'Sözleşme bulunamadı.' }}</div>
+    </section>
+  </div>
+
   <div *ngIf="!loading && contract" class="content">
     <section class="document-section">
       <article class="document">
@@ -22,7 +28,25 @@
           </div>
         </header>
 
-        <form class="document-body" [formGroup]="customerForm">
+        <section *ngIf="!hasFullContract" class="legacy-warning">
+          <h2>Bu link gerçek sözleşme metni taşımıyor</h2>
+          <p>
+            Bu kayıt canlı API testiyle oluşmuş eksik bir kayıttır. Yeni sözleşme oluşturulduğunda müşteri linkinde
+            şirketin doldurduğu metin ve müşterinin dolduracağı alanlar görünecek.
+          </p>
+          <div class="legacy-summary">
+            <div>
+              <span>Sözleşme no</span>
+              <strong>{{ contract.contractNo || contract.id }}</strong>
+            </div>
+            <div>
+              <span>Tur</span>
+              <strong>{{ contract.tourCodeName || contract.notes || '-' }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <form *ngIf="hasFullContract" class="document-body" [formGroup]="customerForm">
           <div *ngFor="let line of templateLines" class="document-line" [ngClass]="line.className">
             <ng-container *ngFor="let part of line.parts">
               <span *ngIf="part.type === 'text'">{{ part.value }}</span>
@@ -77,8 +101,11 @@
       <div class="panel">
         <div class="panel-heading">
           <h2>{{ saved ? 'Sözleşme onaylandı' : 'Onay ve imza' }}</h2>
-          <p *ngIf="!saved">
+          <p *ngIf="!saved && hasFullContract">
             Metindeki açık alanları doldurup imzanızı atarak sözleşmeyi onaylayın.
+          </p>
+          <p *ngIf="!saved && !hasFullContract">
+            Bu test kaydı onaylanamaz. Dashboard'dan yeni bir sözleşme oluşturup müşteri linkini tekrar gönderin.
           </p>
         </div>
 
@@ -86,7 +113,7 @@
           Sözleşme onaylandı. Son hali gönderen firma dashboard'unda görünecek.
         </div>
 
-        <form *ngIf="!saved" class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
+        <form *ngIf="!saved && hasFullContract" class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
           <div class="required-status" [class.complete]="missingRequiredCount === 0">
             {{ missingRequiredCount === 0 ? 'Zorunlu alanlar tamam' : missingRequiredCount + ' zorunlu alan eksik' }}
           </div>

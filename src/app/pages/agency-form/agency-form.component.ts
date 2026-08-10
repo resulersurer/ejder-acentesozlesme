@@ -39,6 +39,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   protected errorMessage = '';
   protected customerFieldKeys: ContractVariableKey[] = [];
   protected templateLines: TemplateLine[] = [];
+  protected hasFullContract = false;
 
   protected readonly form = this.fb.nonNullable.group({
     signerName: [''],
@@ -62,7 +63,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
         this.saved = this.contract.status === 'signed';
         this.setupDocument();
       } catch {
-        await this.router.navigate(['/']);
+        this.errorMessage = 'Sözleşme bulunamadı veya bağlantı geçersiz.';
       } finally {
         this.loading = false;
         setTimeout(() => this.prepareCanvas());
@@ -221,6 +222,16 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
 
   private setupDocument(): void {
     if (!this.contract) {
+      return;
+    }
+
+    this.hasFullContract = Boolean(
+      this.contract.contractTemplate || this.contract.contractText || Object.keys(this.contract.variables ?? {}).length > 0
+    );
+
+    if (!this.hasFullContract) {
+      this.templateLines = [];
+      this.customerFieldKeys = [];
       return;
     }
 
