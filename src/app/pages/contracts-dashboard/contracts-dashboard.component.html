@@ -28,7 +28,7 @@
     <div class="toolbar">
       <label class="search-field">
         <span>Arama</span>
-        <input type="search" placeholder="Acente, yetkili, e-posta..." [value]="query()" (input)="updateQuery($event)" />
+        <input type="search" placeholder="Sözleşme no, müşteri, tur..." [value]="query()" (input)="updateQuery($event)" />
       </label>
 
       <button class="secondary-button" type="button" (click)="loadContracts()" [disabled]="loading()">
@@ -48,7 +48,7 @@
       <article *ngFor="let contract of filteredContracts()" class="contract-row">
         <div class="row-main">
           <div class="title-line">
-            <h2>{{ contract.agencyName || 'İsimsiz acente' }}</h2>
+            <h2>{{ contract.customerTitle || contract.agencyName || 'İsimsiz müşteri' }}</h2>
             <span class="status-pill" [class.signed]="contract.status === 'signed'">
               {{ getStatusLabel(contract) }}
             </span>
@@ -56,16 +56,16 @@
 
           <div class="meta-grid">
             <div>
-              <span>Gönderen</span>
-              <strong>{{ contract.senderName || '-' }}</strong>
+              <span>Sözleşme no</span>
+              <strong>{{ contract.contractNo || contract.id }}</strong>
+            </div>
+            <div>
+              <span>Tur</span>
+              <strong>{{ contract.tourCodeName || contract.notes || '-' }}</strong>
             </div>
             <div>
               <span>Yetkili</span>
               <strong>{{ contract.agencyContact || '-' }}</strong>
-            </div>
-            <div>
-              <span>E-posta</span>
-              <strong>{{ contract.email || '-' }}</strong>
             </div>
             <div>
               <span>Son işlem</span>

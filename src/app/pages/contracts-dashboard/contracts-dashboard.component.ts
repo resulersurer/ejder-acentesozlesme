@@ -34,12 +34,16 @@ export class ContractsDashboardComponent implements OnInit {
 
     return this.contracts().filter((contract) => {
       const searchable = [
+        contract.contractNo,
+        contract.customerTitle,
+        contract.tourCodeName,
         contract.senderName,
         contract.agencyName,
         contract.agencyContact,
         contract.email,
         contract.phone,
         contract.signerName,
+        contract.contractText,
       ]
         .filter(Boolean)
         .join(' ')

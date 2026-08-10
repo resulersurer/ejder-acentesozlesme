@@ -8,6 +8,13 @@ export type ContractData = {
   email: string;
   phone: string;
   notes: string;
+  contractText?: string;
+  contractTemplate?: string;
+  variables?: Record<string, string>;
+  contractNo?: string;
+  contractDate?: string;
+  tourCodeName?: string;
+  customerTitle?: string;
 };
 
 export type SignatureData = {

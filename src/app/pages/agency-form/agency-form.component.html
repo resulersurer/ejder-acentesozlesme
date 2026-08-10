@@ -5,36 +5,25 @@
     <section class="document-section">
       <article class="document">
         <header class="document-header">
-          <h1>Kapalı Grup Sözleşmesi</h1>
+          <h1>Özel Grup Paket Tur Sözleşmesi</h1>
           <div class="document-info">
             <div>
-              <span>Gönderen</span>
-              <strong>{{ contract.senderName }}</strong>
+              <span>Sözleşme No</span>
+              <strong>{{ contract.contractNo || contract.id }}</strong>
             </div>
             <div>
-              <span>Acente</span>
-              <strong>{{ contract.agencyName }}</strong>
+              <span>Müşteri</span>
+              <strong>{{ contract.customerTitle || contract.agencyName }}</strong>
             </div>
             <div>
-              <span>Yürürlük tarihi</span>
-              <strong>{{ contract.effectiveDate }}</strong>
+              <span>Tarih</span>
+              <strong>{{ contract.contractDate || contract.effectiveDate }}</strong>
             </div>
           </div>
         </header>
 
         <section class="document-body">
-          <p class="body-text">İşbu kapalı grup sözleşmesi, {{ contract.senderName }} ile {{ contract.agencyName }} arasında düzenlenmiştir.
-
-Taraflar, aşağıdaki koşulları kabul eder:
-
-1. Yetkilisi: {{ contract.agencyContact }}
-2. Yürürlük tarihi: {{ contract.effectiveDate }}
-3. E-posta: {{ contract.email }}
-4. Telefon: {{ contract.phone }}
-
-{{ contract.notes }}
-
-Bu sözleşme, taraflar tarafından kabul edilmiş ve imzalanmıştır.</p>
+          <p class="body-text">{{ contract.contractText || contract.notes }}</p>
         </section>
 
         <footer class="document-footer">

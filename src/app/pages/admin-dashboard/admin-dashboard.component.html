@@ -25,24 +25,24 @@
 
       <div class="contract-details">
         <div class="detail-row">
-          <span>Gönderen:</span>
-          <strong>{{ contract.senderName }}</strong>
+          <span>Sözleşme no:</span>
+          <strong>{{ contract.contractNo || contract.id }}</strong>
         </div>
         <div class="detail-row">
-          <span>Acente:</span>
-          <strong>{{ contract.agencyName }}</strong>
+          <span>Müşteri:</span>
+          <strong>{{ contract.customerTitle || contract.agencyName }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Tur:</span>
+          <strong>{{ contract.tourCodeName || contract.notes }}</strong>
         </div>
         <div class="detail-row">
           <span>Yetkilisi:</span>
           <strong>{{ contract.agencyContact }}</strong>
         </div>
         <div class="detail-row">
-          <span>E-posta:</span>
+          <span>İletişim:</span>
           <strong>{{ contract.email }}</strong>
-        </div>
-        <div class="detail-row">
-          <span>Telefon:</span>
-          <strong>{{ contract.phone }}</strong>
         </div>
         <div *ngIf="contract.status === 'signed'" class="detail-row">
           <span>İmzalayan:</span>
@@ -52,6 +52,11 @@
           <span>İmza tarihi:</span>
           <strong>{{ contract.signDate }}</strong>
         </div>
+      </div>
+
+      <div class="document-section">
+        <h3>Sözleşme metni</h3>
+        <article class="document-preview">{{ contract.contractText || contract.notes }}</article>
       </div>
 
       <div class="share-section">
