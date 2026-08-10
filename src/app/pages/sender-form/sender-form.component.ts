@@ -5,9 +5,13 @@ import { Router } from '@angular/router';
 import { ContractData, ContractService } from '../../contract.service';
 import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
 
-type VariableGroup = {
-  name: string;
-  fields: readonly (typeof CONTRACT_VARIABLES)[number][];
+type TemplatePart =
+  | { type: 'text'; value: string }
+  | { type: 'field'; key: ContractVariableKey };
+
+type TemplateLine = {
+  className: string;
+  parts: TemplatePart[];
 };
 
 @Component({
@@ -25,25 +29,27 @@ export class SenderFormComponent {
   protected saving = false;
   protected errorMessage = '';
   protected readonly variables = CONTRACT_VARIABLES;
-  protected readonly variableGroups: VariableGroup[] = Array.from(
-    new Set(CONTRACT_VARIABLES.map((field) => field.group))
-  ).map((group) => ({
-    name: group,
-    fields: CONTRACT_VARIABLES.filter((field) => field.group === group),
+  protected readonly templateLines: TemplateLine[] = CONTRACT_TEMPLATE.split('\n').map((line) => ({
+    className: this.getLineClass(line),
+    parts: this.parseLine(line),
   }));
 
   protected readonly form = this.fb.nonNullable.group({
-    contractTemplate: [CONTRACT_TEMPLATE],
     ...Object.fromEntries(CONTRACT_VARIABLES.map((field) => [field.key, ['']])),
   });
 
   protected get renderedContractText(): string {
     const values = this.form.getRawValue() as Record<string, string>;
 
-    return values['contractTemplate'].replace(/\{\{(\w+)\}\}/g, (_match, key: ContractVariableKey) => {
+    return CONTRACT_TEMPLATE.replace(/\{\{(\w+)\}\}/g, (_match, key: ContractVariableKey) => {
       const value = values[key]?.trim();
       return value || `[${this.getVariableLabel(key)}]`;
     });
+  }
+
+  protected get missingRequiredCount(): number {
+    const values = this.form.getRawValue() as Record<string, string>;
+    return CONTRACT_VARIABLES.filter((field) => field.required && !values[field.key]?.trim()).length;
   }
 
   protected async submitForm(): Promise<void> {
@@ -51,6 +57,11 @@ export class SenderFormComponent {
     this.errorMessage = '';
 
     try {
+      if (this.missingRequiredCount > 0) {
+        this.errorMessage = `${this.missingRequiredCount} zorunlu alan eksik.`;
+        return;
+      }
+
       const values = this.form.getRawValue() as Record<string, string>;
       const data: ContractData = {
         senderName: 'Ejder Turizm',
@@ -61,7 +72,7 @@ export class SenderFormComponent {
         phone: values['customerContactInfo'],
         notes: values['tourCodeName'],
         contractText: this.renderedContractText,
-        contractTemplate: values['contractTemplate'],
+        contractTemplate: CONTRACT_TEMPLATE,
         variables: this.extractVariables(values),
         contractNo: values['contractNo'],
         contractDate: values['contractDate'],
@@ -78,15 +89,82 @@ export class SenderFormComponent {
     }
   }
 
-  protected resetTemplate(): void {
-    this.form.patchValue({ contractTemplate: CONTRACT_TEMPLATE });
+  protected getVariableLabel(key: ContractVariableKey): string {
+    return CONTRACT_VARIABLES.find((field) => field.key === key)?.label ?? key;
+  }
+
+  protected getVariablePlaceholder(key: ContractVariableKey): string {
+    return CONTRACT_VARIABLES.find((field) => field.key === key)?.placeholder ?? '';
+  }
+
+  protected isRequired(key: ContractVariableKey): boolean {
+    return Boolean(CONTRACT_VARIABLES.find((field) => field.key === key)?.required);
+  }
+
+  protected isMissing(key: ContractVariableKey): boolean {
+    const value = (this.form.getRawValue() as Record<string, string>)[key];
+    return this.isRequired(key) && !value?.trim();
   }
 
   private extractVariables(values: Record<string, string>): Record<string, string> {
     return Object.fromEntries(CONTRACT_VARIABLES.map((field) => [field.key, values[field.key] ?? '']));
   }
 
-  private getVariableLabel(key: ContractVariableKey): string {
-    return CONTRACT_VARIABLES.find((field) => field.key === key)?.label ?? key;
+  private parseLine(line: string): TemplatePart[] {
+    const parts: TemplatePart[] = [];
+    const tokenPattern = /\{\{(\w+)\}\}/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = tokenPattern.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: line.slice(lastIndex, match.index) });
+      }
+
+      parts.push({ type: 'field', key: match[1] as ContractVariableKey });
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < line.length) {
+      parts.push({ type: 'text', value: line.slice(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text', value: '' }];
+  }
+
+  private getLineClass(line: string): string {
+    if (!line.trim()) {
+      return 'blank-line';
+    }
+
+    if (line.startsWith('EJDER TURİZM SEYAHAT ACENTASI')) {
+      return 'document-title';
+    }
+
+    if (line.startsWith('ÖZEL') || line.startsWith('KISALTILMIŞ')) {
+      return 'document-subtitle';
+    }
+
+    if (line.startsWith('MADDE')) {
+      return 'article-heading';
+    }
+
+    if (
+      line === 'SÖZLEŞME ÖZETİ' ||
+      line === 'EJDER TURİZM' ||
+      line === 'KURUMSAL MÜŞTERİ / GRUP ORGANİZATÖRÜ' ||
+      line === 'KİŞİ SAYISI VE FİYAT BİLGİLERİ' ||
+      line === 'FİYAT VE ÖDEME PLANI' ||
+      line === 'EKLER' ||
+      line === 'İMZA SAYFASI'
+    ) {
+      return 'block-heading';
+    }
+
+    if (line.includes(':') && line.length < 150) {
+      return 'info-line';
+    }
+
+    return 'paragraph-line';
   }
 }

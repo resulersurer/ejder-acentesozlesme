@@ -4,49 +4,45 @@
       <p class="eyebrow">Kapalı grup sözleşmesi</p>
       <h1>Sözleşme metnini hazırla</h1>
       <p class="hero-copy">
-        Şablondaki değişkenleri doldur, sözleşme metnini kontrol et ve dashboard'a kaydet.
+        Kutulu alanları metnin üzerinde doldur. Zorunlu alanlar tamamlandığında sözleşme dashboard'a kaydedilir.
       </p>
+    </div>
+
+    <div class="required-status" [class.complete]="missingRequiredCount === 0">
+      {{ missingRequiredCount === 0 ? 'Zorunlu alanlar tamam' : missingRequiredCount + ' zorunlu alan eksik' }}
     </div>
   </header>
 
-  <form class="editor-layout" [formGroup]="form" (ngSubmit)="submitForm()">
-    <section class="panel template-panel">
-      <div class="panel-heading">
-        <h2>Sözleşme metni</h2>
-        <button class="ghost-button" type="button" (click)="resetTemplate()">Şablona dön</button>
-      </div>
+  <form class="contract-workspace" [formGroup]="form" (ngSubmit)="submitForm()">
+    <section class="document-panel">
+      <article class="legal-document" aria-label="Doldurulabilir sözleşme metni">
+        <div *ngFor="let line of templateLines" class="document-line" [ngClass]="line.className">
+          <ng-container *ngFor="let part of line.parts">
+            <span *ngIf="part.type === 'text'">{{ part.value }}</span>
 
-      <textarea
-        class="template-area"
-        formControlName="contractTemplate"
-        rows="28"
-        spellcheck="false"
-      ></textarea>
-    </section>
-
-    <aside class="panel variables-panel">
-      <div class="panel-heading">
-        <h2>Değişkenler</h2>
-      </div>
-
-      <div class="variable-groups">
-        <section *ngFor="let group of variableGroups" class="variable-group">
-          <h3>{{ group.name }}</h3>
-
-          <label *ngFor="let field of group.fields">
-            <span>{{ field.label }}</span>
-            <input [formControlName]="field.key" type="text" [placeholder]="field.placeholder" />
-          </label>
-        </section>
-      </div>
-    </aside>
-
-    <section class="panel preview-panel">
-      <div class="panel-heading">
-        <h2>Canlı önizleme</h2>
-      </div>
-
-      <article class="document-preview">{{ renderedContractText }}</article>
+            <span
+              *ngIf="part.type === 'field'"
+              class="inline-field"
+              [class.required]="isRequired(part.key)"
+              [class.optional]="!isRequired(part.key)"
+              [class.missing]="isMissing(part.key)"
+            >
+              <label>
+                <span class="field-meta">
+                  <span class="field-label">{{ getVariableLabel(part.key) }}</span>
+                  <span class="field-rule">{{ isRequired(part.key) ? 'Zorunlu' : 'Opsiyonel' }}</span>
+                </span>
+                <input
+                  [formControlName]="part.key"
+                  type="text"
+                  [placeholder]="getVariablePlaceholder(part.key)"
+                  [attr.aria-label]="getVariableLabel(part.key)"
+                />
+              </label>
+            </span>
+          </ng-container>
+        </div>
+      </article>
     </section>
 
     <section class="submit-panel">
