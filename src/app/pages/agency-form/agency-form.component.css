@@ -27,9 +27,9 @@
 
 .document {
   border: 1px solid var(--panel-border);
-  background: var(--panel);
+  background: #fff;
   box-shadow: var(--shadow);
-  border-radius: 30px;
+  border-radius: 8px;
   padding: 28px;
 }
 
@@ -68,14 +68,104 @@
 
 .document-body {
   padding: 22px 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.96rem;
+  line-height: 1.75;
+  color: #16120f;
 }
 
-.body-text {
-  margin: 0;
-  white-space: pre-wrap;
-  line-height: 1.8;
-  font-size: 1rem;
-  color: var(--text);
+.document-line {
+  min-height: 1.7em;
+  overflow-wrap: anywhere;
+}
+
+.blank-line {
+  min-height: 14px;
+}
+
+.document-title {
+  text-align: center;
+  font-size: 1.28rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.document-subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.article-heading,
+.block-heading {
+  margin-top: 18px;
+  font-weight: 800;
+}
+
+.info-line {
+  font-weight: 600;
+}
+
+.paragraph-line {
+  margin-top: 8px;
+}
+
+.inline-field {
+  display: inline-grid;
+  min-width: min(260px, 100%);
+  margin: 4px 5px;
+  vertical-align: middle;
+}
+
+.inline-field label {
+  display: grid;
+  gap: 5px;
+}
+
+.field-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  line-height: 1.2;
+}
+
+.field-label {
+  color: #5d4d42;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.field-rule {
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: rgba(143, 61, 42, 0.08);
+  color: var(--brand-strong);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.inline-field input {
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 0.92rem;
+}
+
+.inline-field.required input {
+  border-color: rgba(143, 61, 42, 0.34);
+}
+
+.inline-field.missing input {
+  border-color: #a42424;
+  box-shadow: 0 0 0 3px rgba(164, 36, 36, 0.1);
+}
+
+.locked-field {
+  display: inline;
+  font-weight: 700;
+  color: #18120f;
 }
 
 .document-footer {
@@ -143,6 +233,12 @@
   margin: 0;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.3rem;
+}
+
+.panel-heading p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .stack {
@@ -218,6 +314,19 @@ button:disabled {
   color: var(--brand-strong);
 }
 
+.required-status {
+  border-radius: 14px;
+  padding: 11px 13px;
+  background: rgba(143, 61, 42, 0.1);
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.required-status.complete {
+  background: rgba(35, 126, 79, 0.12);
+  color: #1f6b43;
+}
+
 .form-actions {
   display: grid;
   gap: 12px;
@@ -291,7 +400,7 @@ button:disabled {
   .document,
   .panel {
     padding: 18px;
-    border-radius: 22px;
+    border-radius: 8px;
   }
 
   .document-info {
@@ -300,6 +409,12 @@ button:disabled {
 
   .document-footer {
     grid-template-columns: 1fr;
+  }
+
+  .inline-field {
+    display: grid;
+    width: 100%;
+    margin: 8px 0;
   }
 }
 
@@ -322,5 +437,27 @@ button:disabled {
     box-shadow: none;
     border: 0;
     padding: 0;
+  }
+
+  .inline-field {
+    display: inline;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .inline-field label,
+  .field-meta {
+    display: inline;
+  }
+
+  .field-meta {
+    display: none;
+  }
+
+  .inline-field input {
+    border: 0;
+    border-bottom: 1px solid #222;
+    border-radius: 0;
+    padding: 0 4px;
   }
 }

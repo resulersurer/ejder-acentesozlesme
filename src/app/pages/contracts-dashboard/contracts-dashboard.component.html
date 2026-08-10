@@ -15,11 +15,11 @@
       <strong>{{ contracts().length }}</strong>
     </div>
     <div class="summary-item signed">
-      <span>İmzalanan</span>
+      <span>Onaylanan</span>
       <strong>{{ signedCount() }}</strong>
     </div>
     <div class="summary-item pending">
-      <span>Bekleyen</span>
+      <span>Onay bekleyen</span>
       <strong>{{ pendingCount() }}</strong>
     </div>
   </section>
@@ -74,12 +74,15 @@
           </div>
 
           <div *ngIf="contract.status === 'signed'" class="signed-line">
-            {{ contract.signerName || 'İmzalayan' }} tarafından {{ contract.signDate || 'tarih belirtilmeden' }} imzalandı.
+            {{ contract.signerName || 'Onaylayan' }} tarafından {{ contract.signDate || 'tarih belirtilmeden' }} onaylandı.
           </div>
         </div>
 
         <div class="row-actions">
           <a class="secondary-link" [routerLink]="['/admin', contract.id]">Detay</a>
+          <button *ngIf="contract.status === 'signed'" class="secondary-button" type="button" (click)="downloadPdf(contract)">
+            PDF indir
+          </button>
           <button class="ghost-button" type="button" (click)="copyShareLink(contract)">
             {{ copiedId() === contract.id ? 'Kopyalandı' : 'Müşteri linki' }}
           </button>

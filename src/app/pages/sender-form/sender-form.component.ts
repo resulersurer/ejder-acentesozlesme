@@ -79,6 +79,7 @@ export class SenderFormComponent {
         contractText: this.renderedContractText,
         contractTemplate: this.templateText,
         variables: this.extractVariables(values),
+        variableSettings: this.variableSettings,
         contractNo: values['contractNo'],
         contractDate: values['contractDate'],
         tourCodeName: values['tourCodeName'],

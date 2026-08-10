@@ -13,18 +13,46 @@
             </div>
             <div>
               <span>Müşteri</span>
-              <strong>{{ contract.customerTitle || contract.agencyName }}</strong>
+              <strong>{{ contract.customerTitle || contract.agencyName || '-' }}</strong>
             </div>
             <div>
-              <span>Tarih</span>
-              <strong>{{ contract.contractDate || contract.effectiveDate }}</strong>
+              <span>Durum</span>
+              <strong>{{ saved ? 'Onaylandı' : 'Onay bekliyor' }}</strong>
             </div>
           </div>
         </header>
 
-        <section class="document-body">
-          <p class="body-text">{{ contract.contractText || contract.notes }}</p>
-        </section>
+        <form class="document-body" [formGroup]="customerForm">
+          <div *ngFor="let line of templateLines" class="document-line" [ngClass]="line.className">
+            <ng-container *ngFor="let part of line.parts">
+              <span *ngIf="part.type === 'text'">{{ part.value }}</span>
+
+              <span
+                *ngIf="part.type === 'field' && isCustomerField(part.key)"
+                class="inline-field"
+                [class.required]="isRequired(part.key)"
+                [class.missing]="isMissing(part.key)"
+              >
+                <label>
+                  <span class="field-meta">
+                    <span class="field-label">{{ getVariableLabel(part.key) }}</span>
+                    <span class="field-rule">{{ isRequired(part.key) ? 'Zorunlu' : 'Opsiyonel' }}</span>
+                  </span>
+                  <input
+                    [formControlName]="part.key"
+                    type="text"
+                    [placeholder]="getVariablePlaceholder(part.key)"
+                    [attr.aria-label]="getVariableLabel(part.key)"
+                  />
+                </label>
+              </span>
+
+              <span *ngIf="part.type === 'field' && !isCustomerField(part.key)" class="locked-field">
+                {{ getVariableValue(part.key) || '_____' }}
+              </span>
+            </ng-container>
+          </div>
+        </form>
 
         <footer class="document-footer">
           <div class="signature-line">
@@ -48,21 +76,28 @@
     <aside class="signature-section">
       <div class="panel">
         <div class="panel-heading">
-          <h2>{{ saved ? 'Sözleşme imzalandı' : 'İmzalamak için' }}</h2>
+          <h2>{{ saved ? 'Sözleşme onaylandı' : 'Onay ve imza' }}</h2>
+          <p *ngIf="!saved">
+            Metindeki açık alanları doldurup imzanızı atarak sözleşmeyi onaylayın.
+          </p>
         </div>
 
         <div *ngIf="saved" class="success-message">
-          Sözleşme kaydedildi. Son hali gönderen firma panelinde görünecek.
+          Sözleşme onaylandı. Son hali gönderen firma dashboard'unda görünecek.
         </div>
 
         <form *ngIf="!saved" class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
+          <div class="required-status" [class.complete]="missingRequiredCount === 0">
+            {{ missingRequiredCount === 0 ? 'Zorunlu alanlar tamam' : missingRequiredCount + ' zorunlu alan eksik' }}
+          </div>
+
           <label>
-            <span>Adınız</span>
+            <span>Adınız soyadınız</span>
             <input formControlName="signerName" type="text" placeholder="Ad Soyad" />
           </label>
           <label>
             <span>Ünvanınız</span>
-            <input formControlName="signerTitle" type="text" placeholder="Ör: Müdür, Yönetici" />
+            <input formControlName="signerTitle" type="text" placeholder="Ör: Müdür, Yetkili" />
           </label>
           <label>
             <span>İmza tarihi</span>
@@ -87,15 +122,17 @@
 
           <div class="form-actions">
             <button class="primary-button" type="submit" [disabled]="saving">
-              {{ saving ? 'Gönderiliyor...' : 'Sözleşmeyi imzala ve gönder' }}
+              {{ saving ? 'Gönderiliyor...' : 'Onayla ve gönder' }}
             </button>
-            <button class="secondary-button" type="button" (click)="printContract()">Yazdır</button>
+            <button class="secondary-button" type="button" (click)="downloadPdf()">PDF indir</button>
           </div>
 
           <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         </form>
 
-        <button *ngIf="saved" class="secondary-button" type="button" (click)="printContract()">Yazdır</button>
+        <div *ngIf="saved" class="form-actions">
+          <button class="primary-button" type="button" (click)="downloadPdf()">PDF indir</button>
+        </div>
       </div>
     </aside>
   </div>

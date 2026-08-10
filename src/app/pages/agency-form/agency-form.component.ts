@@ -3,6 +3,16 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from 
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContractService, ContractRecord, SignatureData } from '../../contract.service';
+import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
+
+type TemplatePart =
+  | { type: 'text'; value: string }
+  | { type: 'field'; key: ContractVariableKey };
+
+type TemplateLine = {
+  className: string;
+  parts: TemplatePart[];
+};
 
 @Component({
   selector: 'app-agency-form',
@@ -27,12 +37,16 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   protected saving = false;
   protected saved = false;
   protected errorMessage = '';
+  protected customerFieldKeys: ContractVariableKey[] = [];
+  protected templateLines: TemplateLine[] = [];
 
   protected readonly form = this.fb.nonNullable.group({
     signerName: [''],
     signerTitle: [''],
     signDate: [''],
   });
+
+  protected readonly customerForm = this.fb.nonNullable.group<Record<string, any>>({});
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -46,6 +60,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
       try {
         this.contract = await this.contractService.getContract(this.contractId);
         this.saved = this.contract.status === 'signed';
+        this.setupDocument();
       } catch {
         await this.router.navigate(['/']);
       } finally {
@@ -64,22 +79,81 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
 
     try {
+      if (this.missingRequiredCount > 0) {
+        this.errorMessage = `${this.missingRequiredCount} zorunlu alan eksik.`;
+        return;
+      }
+
+      const signer = this.form.getRawValue();
+      if (!signer.signerName.trim() || !signer.signDate.trim()) {
+        this.errorMessage = 'Lütfen ad soyad ve imza tarihini doldurun.';
+        return;
+      }
+
       if (!this.hasSignature) {
         this.errorMessage = 'Lütfen imza alanına imzanızı atın.';
         return;
       }
 
-      const signature = {
-        ...(this.form.getRawValue() as Omit<SignatureData, 'signatureImage'>),
-        signatureImage: this.getSignatureImage(),
+      const customerVariables = this.customerForm.getRawValue() as Record<string, string>;
+      const variables = {
+        ...(this.contract?.variables ?? {}),
+        ...customerVariables,
       };
+      const signature: SignatureData = {
+        ...(signer as Omit<SignatureData, 'signatureImage'>),
+        signatureImage: this.getSignatureImage(),
+        customerVariables,
+        variables,
+        contractText: this.renderContractText(variables),
+      };
+
       this.contract = await this.contractService.signContract(this.contractId, signature);
       this.saved = true;
+      this.setupDocument();
     } catch (error) {
       this.errorMessage = error instanceof Error ? error.message : 'Hata oluştu';
     } finally {
       this.saving = false;
     }
+  }
+
+  protected get missingRequiredCount(): number {
+    return this.customerFieldKeys.filter((key) => {
+      const value = String(this.customerForm.controls[key]?.value ?? '').trim();
+      return this.isRequired(key) && !value;
+    }).length;
+  }
+
+  protected isCustomerField(key: ContractVariableKey): boolean {
+    return this.customerFieldKeys.includes(key) && !this.saved;
+  }
+
+  protected isRequired(key: ContractVariableKey): boolean {
+    const setting = this.contract?.variableSettings?.[key];
+    const fallback = CONTRACT_VARIABLES.find((field) => field.key === key)?.required ?? false;
+    return setting?.required ?? fallback;
+  }
+
+  protected isMissing(key: ContractVariableKey): boolean {
+    const value = String(this.customerForm.controls[key]?.value ?? '').trim();
+    return this.isCustomerField(key) && this.isRequired(key) && !value;
+  }
+
+  protected getVariableLabel(key: ContractVariableKey): string {
+    return CONTRACT_VARIABLES.find((field) => field.key === key)?.label ?? key;
+  }
+
+  protected getVariablePlaceholder(key: ContractVariableKey): string {
+    return CONTRACT_VARIABLES.find((field) => field.key === key)?.placeholder ?? '';
+  }
+
+  protected getVariableValue(key: ContractVariableKey): string {
+    if (this.isCustomerField(key)) {
+      return String(this.customerForm.controls[key]?.value ?? '');
+    }
+
+    return this.getStoredVariableValue(key);
   }
 
   protected beginSignature(event: PointerEvent): void {
@@ -139,6 +213,120 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
 
   protected printContract(): void {
     window.print();
+  }
+
+  protected downloadPdf(): void {
+    window.print();
+  }
+
+  private setupDocument(): void {
+    if (!this.contract) {
+      return;
+    }
+
+    const template = this.contract.contractTemplate || CONTRACT_TEMPLATE;
+    this.templateLines = template.split('\n').map((line) => ({
+      className: this.getLineClass(line),
+      parts: this.parseLine(line),
+    }));
+
+    this.customerFieldKeys = this.getCustomerFieldKeys(template);
+    for (const key of this.customerFieldKeys) {
+      if (!this.customerForm.contains(key)) {
+        this.customerForm.addControl(key, this.fb.nonNullable.control(''));
+      }
+    }
+  }
+
+  private getCustomerFieldKeys(template: string): ContractVariableKey[] {
+    if (!this.contract || this.saved) {
+      return [];
+    }
+
+    const keys = new Set<ContractVariableKey>();
+    for (const match of template.matchAll(/\{\{(\w+)\}\}/g)) {
+      const key = match[1] as ContractVariableKey;
+      const known = CONTRACT_VARIABLES.some((field) => field.key === key);
+      const value = this.getStoredVariableValue(key).trim();
+      const fillable = this.contract.variableSettings?.[key]?.fillable ?? true;
+
+      if (known && fillable && !value) {
+        keys.add(key);
+      }
+    }
+
+    return [...keys];
+  }
+
+  private getStoredVariableValue(key: ContractVariableKey): string {
+    const variables = this.contract?.variables ?? {};
+    const customerVariables = this.contract?.customerVariables ?? {};
+    const directValue = this.contract?.[key as keyof ContractRecord];
+    return customerVariables[key] ?? variables[key] ?? (typeof directValue === 'string' ? directValue : '');
+  }
+
+  private renderContractText(variables: Record<string, string>): string {
+    const template = this.contract?.contractTemplate || CONTRACT_TEMPLATE;
+
+    return template.replace(/\{\{(\w+)\}\}/g, (match, key: ContractVariableKey) => {
+      const value = variables[key]?.trim() || this.getStoredVariableValue(key).trim();
+      return value || match;
+    });
+  }
+
+  private parseLine(line: string): TemplatePart[] {
+    const parts: TemplatePart[] = [];
+    const tokenPattern = /\{\{(\w+)\}\}/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = tokenPattern.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: line.slice(lastIndex, match.index) });
+      }
+
+      const key = match[1] as ContractVariableKey;
+      if (CONTRACT_VARIABLES.some((field) => field.key === key)) {
+        parts.push({ type: 'field', key });
+      } else {
+        parts.push({ type: 'text', value: match[0] });
+      }
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < line.length) {
+      parts.push({ type: 'text', value: line.slice(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text', value: '' }];
+  }
+
+  private getLineClass(line: string): string {
+    if (!line.trim()) {
+      return 'blank-line';
+    }
+
+    if (line.startsWith('EJDER')) {
+      return 'document-title';
+    }
+
+    if (line.startsWith('ÖZEL') || line.startsWith('KISALTILMI')) {
+      return 'document-subtitle';
+    }
+
+    if (line.startsWith('MADDE')) {
+      return 'article-heading';
+    }
+
+    if (line.length < 70 && !line.endsWith('.') && line === line.toLocaleUpperCase('tr-TR')) {
+      return 'block-heading';
+    }
+
+    if (line.includes(':') && line.length < 150) {
+      return 'info-line';
+    }
+
+    return 'paragraph-line';
   }
 
   private prepareCanvas(): void {

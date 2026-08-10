@@ -11,6 +11,7 @@ export type ContractData = {
   contractText?: string;
   contractTemplate?: string;
   variables?: Record<string, string>;
+  variableSettings?: Record<string, { required: boolean; fillable: boolean; defaultValue: string }>;
   contractNo?: string;
   contractDate?: string;
   tourCodeName?: string;
@@ -22,6 +23,9 @@ export type SignatureData = {
   signerTitle: string;
   signDate: string;
   signatureImage: string;
+  customerVariables?: Record<string, string>;
+  contractText?: string;
+  variables?: Record<string, string>;
 };
 
 export type ContractRecord = ContractData & {
@@ -34,6 +38,7 @@ export type ContractRecord = ContractData & {
   signerTitle?: string;
   signDate?: string;
   signatureImage?: string;
+  customerVariables?: Record<string, string>;
 };
 
 @Injectable({
