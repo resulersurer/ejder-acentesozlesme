@@ -11,6 +11,7 @@ type TemplatePart =
   | { type: 'field'; key: ContractVariableKey };
 
 type TemplateLine = {
+  value: string;
   className: string;
   parts: TemplatePart[];
 };
@@ -37,6 +38,7 @@ export class SenderFormComponent implements AfterViewInit {
   protected readonly variableSettings = getVariableSettings();
   protected readonly variables = CONTRACT_VARIABLES;
   protected readonly templateLines: TemplateLine[] = this.templateText.split('\n').map((line) => ({
+    value: line,
     className: this.getLineClass(line),
     parts: this.parseLine(line),
   }));
@@ -111,6 +113,14 @@ export class SenderFormComponent implements AfterViewInit {
 
   protected getVariableLabel(key: ContractVariableKey): string {
     return CONTRACT_VARIABLES.find((field) => field.key === key)?.label ?? key;
+  }
+
+  protected isSenderSignatureLine(line: TemplateLine, lineIndex: number): boolean {
+    return (
+      line.value.includes('Paraf / İmza') &&
+      lineIndex > 0 &&
+      this.templateLines[lineIndex - 1].value.includes('{{ejderAuthorizedName}}')
+    );
   }
 
   protected getVariablePlaceholder(key: ContractVariableKey): string {

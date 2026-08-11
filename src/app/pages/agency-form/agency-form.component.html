@@ -47,7 +47,21 @@
         </section>
 
         <form *ngIf="hasFullContract" class="document-body" [formGroup]="customerForm">
-          <div *ngFor="let line of templateLines" class="document-line" [ngClass]="line.className">
+          <div *ngFor="let line of templateLines; let lineIndex = index" class="document-line" [ngClass]="line.className">
+            <ng-container *ngIf="isSenderSignatureLine(line, lineIndex); else regularAgencyLine">
+              <div class="document-signature-line">
+                <span class="document-signature-label">Paraf / İmza:</span>
+                <img
+                  *ngIf="contract.senderSignatureImage"
+                  class="document-signature-image"
+                  [src]="contract.senderSignatureImage"
+                  alt="Ejder Turizm imzası"
+                />
+                <span *ngIf="!contract.senderSignatureImage" class="document-signature-placeholder">__________________</span>
+              </div>
+            </ng-container>
+
+            <ng-template #regularAgencyLine>
             <ng-container *ngFor="let part of line.parts">
               <span *ngIf="part.type === 'text'">{{ part.value }}</span>
 
@@ -75,6 +89,7 @@
                 {{ getVariableValue(part.key) || '_____' }}
               </span>
             </ng-container>
+            </ng-template>
           </div>
         </form>
 

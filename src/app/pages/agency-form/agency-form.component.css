@@ -214,6 +214,31 @@
   color: #18120f;
 }
 
+.document-signature-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 96px;
+}
+
+.document-signature-label {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.document-signature-image {
+  display: block;
+  width: min(320px, 100%);
+  height: 86px;
+  object-fit: contain;
+  object-position: left bottom;
+  border-bottom: 1px solid rgba(23, 18, 15, 0.65);
+}
+
+.document-signature-placeholder {
+  font-weight: 700;
+}
+
 .document-footer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

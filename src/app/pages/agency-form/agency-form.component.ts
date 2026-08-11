@@ -15,6 +15,7 @@ type TemplatePart =
   | { type: 'field'; key: ContractVariableKey };
 
 type TemplateLine = {
+  value: string;
   className: string;
   parts: TemplatePart[];
 };
@@ -154,6 +155,14 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
     return CONTRACT_VARIABLES.find((field) => field.key === key)?.label ?? key;
   }
 
+  protected isSenderSignatureLine(line: TemplateLine, lineIndex: number): boolean {
+    return (
+      line.value.includes('Paraf / İmza') &&
+      lineIndex > 0 &&
+      this.templateLines[lineIndex - 1].value.includes('{{ejderAuthorizedName}}')
+    );
+  }
+
   protected getVariablePlaceholder(key: ContractVariableKey): string {
     return CONTRACT_VARIABLES.find((field) => field.key === key)?.placeholder ?? '';
   }
@@ -246,6 +255,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
 
     const template = this.contract.contractTemplate || CONTRACT_TEMPLATE;
     this.templateLines = template.split('\n').map((line) => ({
+      value: line,
       className: this.getLineClass(line),
       parts: this.parseLine(line),
     }));
