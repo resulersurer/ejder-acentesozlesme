@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ContractRecord, ContractService } from '../../contract.service';
@@ -6,7 +7,7 @@ import { ContractRecord, ContractService } from '../../contract.service';
 @Component({
   selector: 'app-contracts-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './contracts-dashboard.component.html',
   styleUrl: './contracts-dashboard.component.css',
 })
