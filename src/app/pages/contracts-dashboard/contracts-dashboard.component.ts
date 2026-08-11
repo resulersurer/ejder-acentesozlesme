@@ -18,6 +18,7 @@ export class ContractsDashboardComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly copiedId = signal('');
+  protected readonly copiedPdfId = signal('');
   protected readonly deletingId = signal('');
 
   protected readonly signedCount = computed(
@@ -84,6 +85,10 @@ export class ContractsDashboardComponent implements OnInit {
     return `${window.location.origin}/sign/${contract.id}`;
   }
 
+  protected getPdfLink(contract: ContractRecord): string {
+    return `${window.location.origin}/pdf/${contract.id}`;
+  }
+
   protected formatDate(value?: string): string {
     if (!value) {
       return '-';
@@ -106,6 +111,20 @@ export class ContractsDashboardComponent implements OnInit {
       }, 1800);
     } catch {
       this.errorMessage.set('Link kopyalanamadı');
+    }
+  }
+
+  protected async copyPdfLink(contract: ContractRecord): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.getPdfLink(contract));
+      this.copiedPdfId.set(contract.id);
+      setTimeout(() => {
+        if (this.copiedPdfId() === contract.id) {
+          this.copiedPdfId.set('');
+        }
+      }, 1800);
+    } catch {
+      this.errorMessage.set('PDF linki kopyalanamadı');
     }
   }
 
@@ -137,6 +156,11 @@ export class ContractsDashboardComponent implements OnInit {
   }
 
   protected downloadPdf(contract: ContractRecord): void {
+    window.open(this.getPdfLink(contract), '_blank', 'noopener,noreferrer');
+  }
+
+  /*
+  protected legacyDownloadPdf(contract: ContractRecord): void {
     const win = window.open('', '_blank');
 
     if (!win) {
@@ -215,4 +239,5 @@ export class ContractsDashboardComponent implements OnInit {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
+  */
 }

@@ -35,3 +35,9 @@ input,
 textarea {
   font: inherit;
 }
+
+@media print {
+  .topnav {
+    display: none !important;
+  }
+}

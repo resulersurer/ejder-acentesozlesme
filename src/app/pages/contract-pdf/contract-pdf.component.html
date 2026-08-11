@@ -1,0 +1,71 @@
+<div class="pdf-page">
+  <header class="pdf-toolbar no-print">
+    <div>
+      <span class="eyebrow">Kurumsal sözleşme</span>
+      <h1>Final sözleşme belgesi</h1>
+      <p>Bu belgeye özel benzersiz bağlantı üzerinden yazdırabilir veya PDF olarak kaydedebilirsin.</p>
+    </div>
+    <div class="toolbar-actions">
+      <a class="secondary-link" routerLink="/dashboard">Dashboard</a>
+      <button class="primary-button" type="button" (click)="printPdf()">PDF olarak kaydet</button>
+    </div>
+  </header>
+
+  <div *ngIf="loading" class="state-message">Sözleşme yükleniyor...</div>
+  <div *ngIf="!loading && errorMessage" class="state-message error-message">{{ errorMessage }}</div>
+
+  <main *ngIf="!loading && contract" class="contract-paper">
+    <header class="contract-header">
+      <div class="company-lockup">
+        <strong>EJDER TURİZM</strong>
+        <span>SEYAHAT ACENTASI</span>
+      </div>
+      <div class="document-heading">
+        <h2>ÖZEL (KAPALI) GRUP PAKET TUR SÖZLEŞMESİ</h2>
+        <span>Kurumsal sözleşme belgesi</span>
+      </div>
+      <div class="contract-meta">
+        <div><span>Sözleşme no</span><strong>{{ contract.contractNo || contract.id }}</strong></div>
+        <div><span>Sözleşme tarihi</span><strong>{{ contract.contractDate || '-' }}</strong></div>
+        <div><span>Durum</span><strong>{{ getStatusLabel() }}</strong></div>
+      </div>
+    </header>
+
+    <section class="parties-strip">
+      <div><span>Kurumsal müşteri</span><strong>{{ contract.customerTitle || contract.agencyName || '-' }}</strong></div>
+      <div><span>Tur</span><strong>{{ contract.tourCodeName || contract.notes || '-' }}</strong></div>
+      <div><span>Son işlem</span><strong>{{ formatDate(contract.updatedAt || contract.createdAt) }}</strong></div>
+    </section>
+
+    <article class="legal-document" aria-label="Kurumsal sözleşme metni">
+      <div *ngFor="let line of templateLines; let lineIndex = index" class="document-line" [ngClass]="line.className">
+        <ng-container *ngIf="getSignatureImage(line, lineIndex) as signature; else regularLine">
+          <div class="inline-signature">
+            <strong>Paraf / İmza:</strong>
+            <img [src]="signature" alt="İmza" />
+          </div>
+        </ng-container>
+
+        <ng-template #regularLine>
+          <ng-container *ngFor="let part of line.parts">
+            <span *ngIf="part.type === 'text'">{{ part.value }}</span>
+            <span *ngIf="part.type === 'field'" class="locked-field">{{ getVariableValue(part.key) || '________________' }}</span>
+          </ng-container>
+        </ng-template>
+      </div>
+    </article>
+
+    <footer class="final-signatures">
+      <div>
+        <span>Ejder Turizm ve Havacılık Ltd. Şti.</span>
+        <strong>Yetkili / Paraf / İmza</strong>
+        <img *ngIf="contract.senderSignatureImage" [src]="contract.senderSignatureImage" alt="Ejder Turizm imzası" />
+      </div>
+      <div>
+        <span>{{ contract.customerTitle || 'Kurumsal Müşteri' }}</span>
+        <strong>{{ contract.signerName || 'Müşteri yetkilisi' }} / Paraf / İmza</strong>
+        <img *ngIf="contract.signatureImage" [src]="contract.signatureImage" alt="Müşteri imzası" />
+      </div>
+    </footer>
+  </main>
+</div>

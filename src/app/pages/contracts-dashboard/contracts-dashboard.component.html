@@ -83,6 +83,9 @@
           <button *ngIf="contract.status === 'signed'" class="secondary-button" type="button" (click)="downloadPdf(contract)">
             PDF indir
           </button>
+          <button *ngIf="contract.status === 'signed'" class="ghost-button" type="button" (click)="copyPdfLink(contract)">
+            {{ copiedPdfId() === contract.id ? 'PDF linki kopyalandı' : 'PDF linki' }}
+          </button>
           <button class="ghost-button" type="button" (click)="copyShareLink(contract)">
             {{ copiedId() === contract.id ? 'Kopyalandı' : 'Müşteri linki' }}
           </button>
