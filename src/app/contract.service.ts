@@ -61,8 +61,15 @@ export class ContractService {
     return response.json() as Promise<{ id: string }>;
   }
 
-  async getContract(id: string): Promise<ContractRecord> {
-    const response = await fetch(`/api/contracts?id=${encodeURIComponent(id)}`);
+  async getContract(id: string, adminPin?: string): Promise<ContractRecord> {
+    const query = new URLSearchParams({ id });
+    const headers = adminPin ? { 'X-Admin-Dashboard-Pin': adminPin } : undefined;
+
+    if (adminPin) {
+      query.set('admin', '1');
+    }
+
+    const response = await fetch(`/api/contracts?${query.toString()}`, { headers });
 
     if (!response.ok) {
       throw new Error(await response.text());
@@ -71,8 +78,10 @@ export class ContractService {
     return response.json() as Promise<ContractRecord>;
   }
 
-  async listContracts(): Promise<ContractRecord[]> {
-    const response = await fetch('/api/contracts');
+  async listContracts(adminPin: string): Promise<ContractRecord[]> {
+    const response = await fetch('/api/contracts', {
+      headers: { 'X-Admin-Dashboard-Pin': adminPin },
+    });
 
     if (!response.ok) {
       throw new Error(await response.text());

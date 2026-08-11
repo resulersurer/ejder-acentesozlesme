@@ -37,6 +37,23 @@ const ensureTable = async (sql) => {
   }
 };
 
+const requireDashboardAccess = (req, res) => {
+  const expectedPin = process.env.ADMIN_DASHBOARD_PIN || process.env.ADMIN_DELETE_PIN;
+  const requestPin = req.headers['x-admin-dashboard-pin'];
+
+  if (!expectedPin) {
+    res.status(503).json({ message: 'ADMIN_DASHBOARD_PIN is not configured' });
+    return false;
+  }
+
+  if (requestPin !== expectedPin) {
+    res.status(401).json({ message: 'dashboard pin is invalid' });
+    return false;
+  }
+
+  return true;
+};
+
 const handler = async (req, res) => {
   try {
     const sql = getSql();
@@ -44,6 +61,12 @@ const handler = async (req, res) => {
 
     if (req.method === 'GET') {
       const id = typeof req.query?.id === 'string' ? req.query.id : '';
+
+      if (!id || req.query?.admin === '1') {
+        if (!requireDashboardAccess(req, res)) {
+          return;
+        }
+      }
 
       if (!id) {
         const rows = await sql`

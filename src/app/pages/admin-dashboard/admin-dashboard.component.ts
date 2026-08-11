@@ -31,7 +31,14 @@ export class AdminDashboardComponent implements OnInit {
       }
 
       try {
-        this.contract = await this.contractService.getContract(this.contractId);
+        const adminPin = sessionStorage.getItem('ejder-dashboard-pin');
+
+        if (!adminPin) {
+          await this.router.navigate(['/dashboard']);
+          return;
+        }
+
+        this.contract = await this.contractService.getContract(this.contractId, adminPin);
         this.shareLink = `${window.location.origin}/sign/${this.contractId}`;
       } catch {
         await this.router.navigate(['/']);

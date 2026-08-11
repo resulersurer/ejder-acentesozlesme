@@ -1,4 +1,30 @@
-<div class="page-shell">
+<div *ngIf="!authorized()" class="dashboard-lock-page">
+  <main class="dashboard-lock-panel">
+    <span class="lock-eyebrow">Gizli şirket arşivi</span>
+    <h1>Dashboard kilitli</h1>
+    <p>Sözleşme listesini görmek için dashboard şifresini girin.</p>
+
+    <form class="dashboard-lock-form" (ngSubmit)="unlockDashboard()">
+      <label>
+        <span>Dashboard şifresi</span>
+        <input
+          type="password"
+          [value]="dashboardPin()"
+          (input)="updateDashboardPin($event)"
+          autocomplete="current-password"
+          autofocus
+        />
+      </label>
+      <button class="primary-link" type="submit" [disabled]="authLoading()">
+        {{ authLoading() ? 'Kontrol ediliyor...' : 'Dashboard’a gir' }}
+      </button>
+    </form>
+
+    <div *ngIf="errorMessage()" class="error-message">{{ errorMessage() }}</div>
+  </main>
+</div>
+
+<div *ngIf="authorized()" class="page-shell">
   <header class="page-header">
     <div>
       <p class="eyebrow">Sözleşme arşivi</p>
@@ -6,7 +32,10 @@
       <p class="header-copy">Oluşturulan sözleşmeleri, imza durumlarını ve müşteri linklerini tek ekrandan takip et.</p>
     </div>
 
-    <a class="primary-link" routerLink="/">Yeni sözleşme</a>
+    <div class="header-actions">
+      <a class="primary-link" routerLink="/">Yeni sözleşme</a>
+      <button class="ghost-button" type="button" (click)="lockDashboard()">Kilitle</button>
+    </div>
   </header>
 
   <section class="summary-grid">

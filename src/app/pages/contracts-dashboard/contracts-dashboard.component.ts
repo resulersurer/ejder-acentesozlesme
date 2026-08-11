@@ -16,6 +16,9 @@ export class ContractsDashboardComponent implements OnInit {
   protected readonly contracts = signal<ContractRecord[]>([]);
   protected readonly query = signal('');
   protected readonly loading = signal(true);
+  protected readonly authorized = signal(false);
+  protected readonly authLoading = signal(false);
+  protected readonly dashboardPin = signal('');
   protected readonly errorMessage = signal('');
   protected readonly copiedId = signal('');
   protected readonly copiedPdfId = signal('');
@@ -56,20 +59,65 @@ export class ContractsDashboardComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await this.loadContracts();
+    const savedPin = sessionStorage.getItem('ejder-dashboard-pin');
+
+    if (!savedPin) {
+      this.loading.set(false);
+      return;
+    }
+
+    this.dashboardPin.set(savedPin);
+    await this.loadContracts(savedPin);
   }
 
-  protected async loadContracts(): Promise<void> {
+  protected async loadContracts(pin = this.dashboardPin()): Promise<void> {
+    if (!pin) {
+      this.authorized.set(false);
+      this.loading.set(false);
+      return;
+    }
+
     this.loading.set(true);
     this.errorMessage.set('');
 
     try {
-      this.contracts.set(await this.contractService.listContracts());
+      this.contracts.set(await this.contractService.listContracts(pin));
+      sessionStorage.setItem('ejder-dashboard-pin', pin);
+      this.dashboardPin.set(pin);
+      this.authorized.set(true);
     } catch (error) {
+      sessionStorage.removeItem('ejder-dashboard-pin');
+      this.authorized.set(false);
+      this.contracts.set([]);
       this.errorMessage.set(error instanceof Error ? error.message : 'Sözleşmeler yüklenemedi');
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected updateDashboardPin(event: Event): void {
+    this.dashboardPin.set((event.target as HTMLInputElement).value);
+  }
+
+  protected async unlockDashboard(): Promise<void> {
+    const pin = this.dashboardPin().trim();
+
+    if (!pin) {
+      this.errorMessage.set('Dashboard PIN girin.');
+      return;
+    }
+
+    this.authLoading.set(true);
+    await this.loadContracts(pin);
+    this.authLoading.set(false);
+  }
+
+  protected lockDashboard(): void {
+    sessionStorage.removeItem('ejder-dashboard-pin');
+    this.dashboardPin.set('');
+    this.authorized.set(false);
+    this.contracts.set([]);
+    this.query.set('');
   }
 
   protected updateQuery(event: Event): void {
