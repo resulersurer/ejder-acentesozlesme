@@ -16,6 +16,7 @@ export type ContractData = {
   contractDate?: string;
   tourCodeName?: string;
   customerTitle?: string;
+  senderSignatureImage?: string;
 };
 
 export type SignatureData = {
@@ -39,6 +40,7 @@ export type ContractRecord = ContractData & {
   signDate?: string;
   signatureImage?: string;
   customerVariables?: Record<string, string>;
+  senderSignatureImage?: string;
 };
 
 @Injectable({

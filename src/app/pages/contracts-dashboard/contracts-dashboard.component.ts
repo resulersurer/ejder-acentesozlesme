@@ -137,7 +137,7 @@ export class ContractsDashboardComponent implements OnInit {
   }
 
   protected downloadPdf(contract: ContractRecord): void {
-    const win = window.open('', '_blank', 'noopener,noreferrer');
+    const win = window.open('', '_blank');
 
     if (!win) {
       this.errorMessage.set('PDF penceresi açılamadı');
@@ -145,10 +145,15 @@ export class ContractsDashboardComponent implements OnInit {
     }
 
     const title = this.escapeHtml(contract.contractNo || contract.id);
-    const signature = contract.signatureImage
-      ? `<img class="signature" src="${contract.signatureImage}" alt="Müşteri imzası">`
+    const senderSignature = contract.senderSignatureImage
+      ? `<div class="signature-block"><strong>Ejder Turizm paraf / imza</strong><img class="signature" src="${this.escapeHtml(contract.senderSignatureImage)}" alt="Ejder Turizm imzası"></div>`
       : '';
+    const customerSignature = contract.signatureImage
+      ? `<div class="signature-block"><strong>Müşteri elektronik imzası</strong><img class="signature" src="${this.escapeHtml(contract.signatureImage)}" alt="Müşteri imzası"></div>`
+      : '';
+    const documentText = this.getContractText(contract);
 
+    win.document.open();
     win.document.write(`
       <!doctype html>
       <html lang="tr">
@@ -162,6 +167,7 @@ export class ContractsDashboardComponent implements OnInit {
             .meta div { margin: 5px 0; }
             .document { white-space: pre-wrap; line-height: 1.65; font-size: 12px; }
             .signature-wrap { margin-top: 28px; border-top: 1px solid #ddd; padding-top: 18px; }
+            .signature-block { display: inline-grid; gap: 8px; min-width: 240px; margin: 0 28px 20px 0; vertical-align: top; font-family: Arial, sans-serif; font-size: 12px; }
             .signature { max-width: 320px; max-height: 120px; object-fit: contain; }
             @media print { body { margin: 18mm; } }
           </style>
@@ -176,18 +182,29 @@ export class ContractsDashboardComponent implements OnInit {
             <div><strong>İmzalayan:</strong> ${this.escapeHtml(contract.signerName || '-')}</div>
             <div><strong>İmza tarihi:</strong> ${this.escapeHtml(contract.signDate || '-')}</div>
           </section>
-          <article class="document">${this.escapeHtml(contract.contractText || contract.notes || '')}</article>
-          <section class="signature-wrap">${signature}</section>
-          <script>
-            window.onload = () => {
-              window.focus();
-              window.print();
-            };
-          </script>
+          <article class="document">${this.escapeHtml(documentText)}</article>
+          <section class="signature-wrap">${senderSignature}${customerSignature}</section>
         </body>
       </html>
     `);
     win.document.close();
+    setTimeout(() => {
+      win.focus();
+      win.print();
+    }, 300);
+  }
+
+  private getContractText(contract: ContractRecord): string {
+    if (contract.contractText?.trim()) {
+      return contract.contractText;
+    }
+
+    const template = contract.contractTemplate || contract.notes || '';
+    const variables = contract.variables || {};
+
+    return template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => {
+      return variables[key]?.trim() || match;
+    });
   }
 
   private escapeHtml(value: string): string {

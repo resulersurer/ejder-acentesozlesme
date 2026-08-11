@@ -79,6 +79,12 @@
         </form>
 
         <footer class="document-footer">
+          <div class="signature-line signature-image-line">
+            <span>Ejder Turizm paraf / imza</span>
+            <div class="signature-space image-space">
+              <img *ngIf="contract.senderSignatureImage" [src]="contract.senderSignatureImage" alt="Ejder Turizm imzası" />
+            </div>
+          </div>
           <div class="signature-line">
             <span>İmzalayan</span>
             <div class="signature-space">{{ contract.signerName || '' }}</div>
@@ -88,7 +94,7 @@
             <div class="signature-space">{{ contract.signDate || '' }}</div>
           </div>
           <div class="signature-line signature-image-line">
-            <span>Elektronik imza</span>
+            <span>Müşteri elektronik imzası</span>
             <div class="signature-space image-space">
               <img *ngIf="contract.signatureImage" [src]="contract.signatureImage" alt="Müşteri imzası" />
             </div>

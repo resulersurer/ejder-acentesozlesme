@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContractData, ContractService } from '../../contract.service';
@@ -22,10 +22,14 @@ type TemplateLine = {
   templateUrl: './sender-form.component.html',
   styleUrl: './sender-form.component.css',
 })
-export class SenderFormComponent {
+export class SenderFormComponent implements AfterViewInit {
+  @ViewChild('senderSignatureCanvas') private senderSignatureCanvas?: ElementRef<HTMLCanvasElement>;
+
   private readonly fb = inject(FormBuilder);
   private readonly contractService = inject(ContractService);
   private readonly router = inject(Router);
+  private drawing = false;
+  private hasSignature = false;
 
   protected saving = false;
   protected errorMessage = '';
@@ -42,6 +46,10 @@ export class SenderFormComponent {
       CONTRACT_VARIABLES.map((field) => [field.key, [this.getInitialValue(field.key)]])
     ),
   });
+
+  ngAfterViewInit(): void {
+    this.prepareSignatureCanvas();
+  }
 
   protected get renderedContractText(): string {
     const values = this.form.getRawValue() as Record<string, string>;
@@ -67,6 +75,11 @@ export class SenderFormComponent {
         return;
       }
 
+      if (!this.hasSignature) {
+        this.errorMessage = 'Lütfen Ejder Turizm paraf / imza alanını doldurun.';
+        return;
+      }
+
       const values = this.form.getRawValue() as Record<string, string>;
       const data: ContractData = {
         senderName: 'Ejder Turizm',
@@ -84,6 +97,7 @@ export class SenderFormComponent {
         contractDate: values['contractDate'],
         tourCodeName: values['tourCodeName'],
         customerTitle: values['customerTitle'],
+        senderSignatureImage: this.getSignatureImage(),
       };
 
       const result = await this.contractService.createContract(data);
@@ -125,6 +139,61 @@ export class SenderFormComponent {
     return value || this.getVariablePlaceholder(key);
   }
 
+  protected beginSignature(event: PointerEvent): void {
+    const canvas = this.senderSignatureCanvas?.nativeElement;
+    const context = canvas?.getContext('2d');
+
+    if (!canvas || !context) {
+      return;
+    }
+
+    canvas.setPointerCapture(event.pointerId);
+    this.drawing = true;
+    this.hasSignature = true;
+    const point = this.getCanvasPoint(event, canvas);
+    context.beginPath();
+    context.moveTo(point.x, point.y);
+  }
+
+  protected drawSignature(event: PointerEvent): void {
+    if (!this.drawing) {
+      return;
+    }
+
+    const canvas = this.senderSignatureCanvas?.nativeElement;
+    const context = canvas?.getContext('2d');
+
+    if (!canvas || !context) {
+      return;
+    }
+
+    const point = this.getCanvasPoint(event, canvas);
+    context.lineTo(point.x, point.y);
+    context.stroke();
+  }
+
+  protected endSignature(event: PointerEvent): void {
+    const canvas = this.senderSignatureCanvas?.nativeElement;
+
+    if (canvas?.hasPointerCapture(event.pointerId)) {
+      canvas.releasePointerCapture(event.pointerId);
+    }
+
+    this.drawing = false;
+  }
+
+  protected clearSignature(): void {
+    const canvas = this.senderSignatureCanvas?.nativeElement;
+    const context = canvas?.getContext('2d');
+
+    if (!canvas || !context) {
+      return;
+    }
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    this.hasSignature = false;
+  }
+
   private extractVariables(values: Record<string, string>): Record<string, string> {
     return Object.fromEntries(CONTRACT_VARIABLES.map((field) => [field.key, values[field.key] ?? '']));
   }
@@ -134,7 +203,23 @@ export class SenderFormComponent {
       return this.generateContractNo();
     }
 
+    if (key === 'contractDate') {
+      return this.formatContractDate(new Date());
+    }
+
+    if (key === 'ejderAuthorizedName') {
+      return 'Ejder Turizm ve Havacılık Ltd. Şti.';
+    }
+
     return this.variableSettings[key]?.defaultValue ?? '';
+  }
+
+  private formatContractDate(date: Date): string {
+    return [
+      String(date.getDate()).padStart(2, '0'),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      date.getFullYear(),
+    ].join('.');
   }
 
   private generateContractNo(): string {
@@ -214,5 +299,36 @@ export class SenderFormComponent {
     }
 
     return 'paragraph-line';
+  }
+
+  private prepareSignatureCanvas(): void {
+    const canvas = this.senderSignatureCanvas?.nativeElement;
+    const context = canvas?.getContext('2d');
+
+    if (!canvas || !context) {
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const scale = window.devicePixelRatio || 1;
+    canvas.width = Math.max(1, Math.floor(rect.width * scale));
+    canvas.height = Math.max(1, Math.floor(rect.height * scale));
+    context.scale(scale, scale);
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+    context.lineWidth = 2.4;
+    context.strokeStyle = '#17120f';
+  }
+
+  private getCanvasPoint(event: PointerEvent, canvas: HTMLCanvasElement): { x: number; y: number } {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  }
+
+  private getSignatureImage(): string {
+    return this.senderSignatureCanvas?.nativeElement.toDataURL('image/png') ?? '';
   }
 }

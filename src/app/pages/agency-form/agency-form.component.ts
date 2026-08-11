@@ -49,7 +49,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   protected readonly form = this.fb.nonNullable.group({
     signerName: [''],
     signerTitle: [''],
-    signDate: [''],
+    signDate: [this.getTodayInputValue()],
   });
 
   protected readonly customerForm = this.fb.nonNullable.group<Record<string, any>>({});
@@ -379,5 +379,14 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   private getSignatureImage(): string {
     const canvas = this.signatureCanvas?.nativeElement;
     return canvas?.toDataURL('image/png') ?? '';
+  }
+
+  private getTodayInputValue(): string {
+    const date = new Date();
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0'),
+    ].join('-');
   }
 }

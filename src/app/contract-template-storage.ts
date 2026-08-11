@@ -17,6 +17,10 @@ const defaultValueFor = (key: ContractVariableKey): string => {
     return 'Japonya Kore Turu THY NRT 12Gün - 2026 - 216008000002781860';
   }
 
+  if (key === 'ejderAuthorizedName') {
+    return 'Ejder Turizm ve Havacılık Ltd. Şti.';
+  }
+
   if (key === 'currency') {
     return 'TL';
   }

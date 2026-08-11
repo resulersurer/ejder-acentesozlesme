@@ -49,6 +49,25 @@
       </article>
     </section>
 
+    <section class="sender-signature-panel" aria-label="Ejder Turizm paraf ve imza">
+      <div class="signature-heading">
+        <div>
+          <h2>Ejder Turizm paraf / imza</h2>
+          <p>Kaydetmeden önce şirket yetkilisi paraf veya imzasını atmalıdır.</p>
+        </div>
+        <button class="text-button" type="button" (click)="clearSignature()">Temizle</button>
+      </div>
+      <canvas
+        #senderSignatureCanvas
+        (pointerdown)="beginSignature($event)"
+        (pointermove)="drawSignature($event)"
+        (pointerup)="endSignature($event)"
+        (pointercancel)="endSignature($event)"
+        (pointerleave)="endSignature($event)"
+        aria-label="Ejder Turizm paraf ve imza alanı"
+      ></canvas>
+    </section>
+
     <section class="submit-panel">
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
