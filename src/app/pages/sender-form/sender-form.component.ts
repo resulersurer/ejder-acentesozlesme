@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContractData, ContractService } from '../../contract.service';
 import { CONTRACT_VARIABLES, CONTRACT_VARIABLE_OWNERS, ContractVariableKey } from '../../contract-template';
 import { getContractTemplate, getVariableSettings } from '../../contract-template-storage';
+import { syncFormControlGroups } from '../../form-field-sync';
 
 type TemplatePart =
   | { type: 'text'; value: string }
@@ -23,7 +25,7 @@ type TemplateLine = {
   templateUrl: './sender-form.component.html',
   styleUrl: './sender-form.component.css',
 })
-export class SenderFormComponent implements AfterViewInit {
+export class SenderFormComponent implements AfterViewInit, OnDestroy {
   @ViewChild('senderSignatureCanvas') private senderSignatureCanvas?: ElementRef<HTMLCanvasElement>;
 
   private readonly fb = inject(FormBuilder);
@@ -48,9 +50,16 @@ export class SenderFormComponent implements AfterViewInit {
       CONTRACT_VARIABLES.map((field) => [field.key, [this.getInitialValue(field.key)]])
     ),
   });
+  private readonly syncedFields: Subscription = syncFormControlGroups(this.form, [
+    ['customerRepresentative', 'customerAuthorizedName'],
+  ]);
 
   ngAfterViewInit(): void {
     this.prepareSignatureCanvas();
+  }
+
+  ngOnDestroy(): void {
+    this.syncedFields.unsubscribe();
   }
 
   protected get renderedContractText(): string {

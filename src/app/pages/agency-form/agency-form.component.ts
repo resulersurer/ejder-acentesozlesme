@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContractService, ContractRecord, SignatureData } from '../../contract.service';
 import {
   CONTRACT_TEMPLATE,
@@ -9,6 +10,7 @@ import {
   CONTRACT_VARIABLE_OWNERS,
   ContractVariableKey,
 } from '../../contract-template';
+import { syncFormControlGroups } from '../../form-field-sync';
 
 type TemplatePart =
   | { type: 'text'; value: string }
@@ -27,7 +29,7 @@ type TemplateLine = {
   templateUrl: './agency-form.component.html',
   styleUrl: './agency-form.component.css',
 })
-export class AgencyFormComponent implements OnInit, AfterViewInit {
+export class AgencyFormComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('signatureCanvas') private signatureCanvas?: ElementRef<HTMLCanvasElement>;
 
   private readonly route = inject(ActivatedRoute);
@@ -36,6 +38,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
   private readonly fb = inject(FormBuilder);
   private drawing = false;
   private hasSignature = false;
+  private syncedFields = new Subscription();
 
   protected contract: ContractRecord | null = null;
   protected contractId = '';
@@ -79,6 +82,10 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.prepareCanvas();
+  }
+
+  ngOnDestroy(): void {
+    this.syncedFields.unsubscribe();
   }
 
   protected async submitSignature(): Promise<void> {
@@ -266,6 +273,11 @@ export class AgencyFormComponent implements OnInit, AfterViewInit {
         this.customerForm.addControl(key, this.fb.nonNullable.control(''));
       }
     }
+
+    this.syncedFields.unsubscribe();
+    this.syncedFields = syncFormControlGroups(this.customerForm, [
+      ['customerRepresentative', 'customerAuthorizedName'],
+    ]);
   }
 
   private getCustomerFieldKeys(template: string): ContractVariableKey[] {
