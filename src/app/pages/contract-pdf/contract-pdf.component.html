@@ -54,18 +54,5 @@
         </ng-template>
       </div>
     </article>
-
-    <footer class="final-signatures">
-      <div>
-        <span>Ejder Turizm ve Havacılık Ltd. Şti.</span>
-        <strong>Yetkili / Paraf / İmza</strong>
-        <img *ngIf="contract.senderSignatureImage" [src]="contract.senderSignatureImage" alt="Ejder Turizm imzası" />
-      </div>
-      <div>
-        <span>{{ contract.customerTitle || 'Kurumsal Müşteri' }}</span>
-        <strong>{{ contract.signerName || 'Müşteri yetkilisi' }} / Paraf / İmza</strong>
-        <img *ngIf="contract.signatureImage" [src]="contract.signatureImage" alt="Müşteri imzası" />
-      </div>
-    </footer>
   </main>
 </div>

@@ -229,40 +229,6 @@
   border-bottom: 1px solid #2d2925;
 }
 
-.final-signatures {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 36px;
-  margin-top: 34px;
-  padding-top: 22px;
-  border-top: 1px solid #cfc8bf;
-  font-family: Arial, sans-serif;
-}
-
-.final-signatures > div {
-  display: grid;
-  gap: 8px;
-  min-height: 150px;
-  align-content: start;
-}
-
-.final-signatures span {
-  color: #66584c;
-  font-size: 0.78rem;
-}
-
-.final-signatures strong {
-  font-size: 0.82rem;
-}
-
-.final-signatures img {
-  width: 280px;
-  height: 90px;
-  object-fit: contain;
-  object-position: left bottom;
-  border-bottom: 1px solid #2d2925;
-}
-
 @media (max-width: 800px) {
   .pdf-page {
     width: min(100% - 18px, 100%);
@@ -284,8 +250,7 @@
     padding: 24px 18px 30px;
   }
 
-  .parties-strip,
-  .final-signatures {
+  .parties-strip {
     grid-template-columns: 1fr;
   }
 }
