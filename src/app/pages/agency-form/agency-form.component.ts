@@ -99,8 +99,8 @@ export class AgencyFormComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       const signer = this.form.getRawValue();
-      if (!signer.signerName.trim() || !signer.signDate.trim()) {
-        this.errorMessage = 'Lütfen ad soyad ve imza tarihini doldurun.';
+      if (!signer.signerName.trim() || !signer.signerTitle.trim()) {
+        this.errorMessage = 'Lütfen ad soyad ve ünvan alanlarını doldurun.';
         return;
       }
 

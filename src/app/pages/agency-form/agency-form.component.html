@@ -135,10 +135,6 @@
         </div>
 
         <form *ngIf="!saved && hasFullContract" class="stack" [formGroup]="form" (ngSubmit)="submitSignature()">
-          <div class="required-status" [class.complete]="missingRequiredCount === 0">
-            {{ missingRequiredCount === 0 ? 'Zorunlu alanlar tamam' : missingRequiredCount + ' zorunlu alan eksik' }}
-          </div>
-
           <label>
             <span>Adınız soyadınız</span>
             <input formControlName="signerName" type="text" placeholder="Ad Soyad" />
@@ -146,10 +142,6 @@
           <label>
             <span>Ünvanınız</span>
             <input formControlName="signerTitle" type="text" placeholder="Ör: Müdür, Yetkili" />
-          </label>
-          <label>
-            <span>İmza tarihi</span>
-            <input formControlName="signDate" type="date" />
           </label>
 
           <div class="signature-pad">
