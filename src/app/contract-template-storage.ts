@@ -25,6 +25,10 @@ const defaultValueFor = (key: ContractVariableKey): string => {
     return 'TL';
   }
 
+  if (key === 'pageCount') {
+    return '7 (yedi)';
+  }
+
   return '';
 };
 

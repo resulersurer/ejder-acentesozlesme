@@ -58,7 +58,8 @@ export class ContractPdfComponent implements OnInit {
     const customerVariables = this.contract?.customerVariables ?? {};
     const directValue = this.contract?.[key as keyof ContractRecord];
 
-    return customerVariables[key] ?? variables[key] ?? (typeof directValue === 'string' ? directValue : '');
+    const value = customerVariables[key] ?? variables[key] ?? (typeof directValue === 'string' ? directValue : '');
+    return value || (key === 'pageCount' ? '7 (yedi)' : '');
   }
 
   protected getSignatureImage(line: TemplateLine, lineIndex: number): string {

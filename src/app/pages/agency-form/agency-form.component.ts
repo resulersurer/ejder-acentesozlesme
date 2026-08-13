@@ -179,7 +179,8 @@ export class AgencyFormComponent implements OnInit, AfterViewInit, OnDestroy {
       return String(this.customerForm.controls[key]?.value ?? '');
     }
 
-    return this.getStoredVariableValue(key);
+    const value = this.getStoredVariableValue(key);
+    return value || (key === 'pageCount' ? '7 (yedi)' : '');
   }
 
   protected beginSignature(event: PointerEvent): void {
