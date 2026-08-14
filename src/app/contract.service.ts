@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+export const DEFAULT_SENDER_SIGNATURE_IMAGE = 'assets/ejder-signature.png';
+
 export type ContractData = {
   senderName: string;
   agencyName: string;

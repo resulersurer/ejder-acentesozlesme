@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ContractRecord, ContractService } from '../../contract.service';
+import { ContractRecord, ContractService, DEFAULT_SENDER_SIGNATURE_IMAGE } from '../../contract.service';
 import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from '../../contract-template';
 
 type TemplatePart =
@@ -70,7 +70,7 @@ export class ContractPdfComponent implements OnInit {
     const previousLine = this.templateLines[lineIndex - 1]?.value ?? '';
 
     if (previousLine.includes('{{ejderAuthorizedName}}')) {
-      return this.contract?.senderSignatureImage ?? '';
+      return this.contract?.senderSignatureImage || DEFAULT_SENDER_SIGNATURE_IMAGE;
     }
 
     if (previousLine.includes('{{customerAuthorizedName}}')) {

@@ -20,16 +20,7 @@
           <ng-container *ngIf="isSenderSignatureLine(line, lineIndex); else regularDocumentLine">
             <div class="document-signature-line">
               <span class="document-signature-label">Paraf / İmza:</span>
-              <canvas
-                #senderSignatureCanvas
-                (pointerdown)="beginSignature($event)"
-                (pointermove)="drawSignature($event)"
-                (pointerup)="endSignature($event)"
-                (pointercancel)="endSignature($event)"
-                (pointerleave)="endSignature($event)"
-                aria-label="Ejder Turizm paraf ve imza alanı"
-              ></canvas>
-              <button class="text-button document-clear-button" type="button" (click)="clearSignature()">Temizle</button>
+              <img class="document-signature-image" [src]="senderSignatureImage" alt="Ejder Turizm imzası" />
             </div>
           </ng-container>
 

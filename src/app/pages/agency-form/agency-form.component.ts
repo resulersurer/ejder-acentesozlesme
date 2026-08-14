@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inj
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ContractService, ContractRecord, SignatureData } from '../../contract.service';
+import { ContractService, ContractRecord, DEFAULT_SENDER_SIGNATURE_IMAGE, SignatureData } from '../../contract.service';
 import {
   CONTRACT_TEMPLATE,
   CONTRACT_VARIABLES,
@@ -49,6 +49,7 @@ export class AgencyFormComponent implements OnInit, AfterViewInit, OnDestroy {
   protected customerFieldKeys: ContractVariableKey[] = [];
   protected templateLines: TemplateLine[] = [];
   protected hasFullContract = false;
+  protected readonly senderSignatureImage = DEFAULT_SENDER_SIGNATURE_IMAGE;
 
   protected readonly form = this.fb.nonNullable.group({
     signerName: [''],

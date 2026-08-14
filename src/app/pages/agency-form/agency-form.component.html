@@ -52,12 +52,10 @@
               <div class="document-signature-line">
                 <span class="document-signature-label">Paraf / İmza:</span>
                 <img
-                  *ngIf="contract.senderSignatureImage"
                   class="document-signature-image"
-                  [src]="contract.senderSignatureImage"
+                  [src]="contract.senderSignatureImage || senderSignatureImage"
                   alt="Ejder Turizm imzası"
                 />
-                <span *ngIf="!contract.senderSignatureImage" class="document-signature-placeholder">__________________</span>
               </div>
             </ng-container>
 

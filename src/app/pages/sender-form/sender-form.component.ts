@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ContractData, ContractService } from '../../contract.service';
+import { ContractData, ContractService, DEFAULT_SENDER_SIGNATURE_IMAGE } from '../../contract.service';
 import { CONTRACT_VARIABLES, CONTRACT_VARIABLE_OWNERS, ContractVariableKey } from '../../contract-template';
 import { getContractTemplate, getVariableSettings } from '../../contract-template-storage';
 import { syncFormControlGroups } from '../../form-field-sync';
@@ -25,17 +25,14 @@ type TemplateLine = {
   templateUrl: './sender-form.component.html',
   styleUrl: './sender-form.component.css',
 })
-export class SenderFormComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('senderSignatureCanvas') private senderSignatureCanvas?: ElementRef<HTMLCanvasElement>;
-
+export class SenderFormComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly contractService = inject(ContractService);
   private readonly router = inject(Router);
-  private drawing = false;
-  private hasSignature = false;
 
   protected saving = false;
   protected errorMessage = '';
+  protected readonly senderSignatureImage = DEFAULT_SENDER_SIGNATURE_IMAGE;
   protected readonly templateText = getContractTemplate();
   protected readonly variableSettings = getVariableSettings();
   protected readonly variables = CONTRACT_VARIABLES;
@@ -53,10 +50,6 @@ export class SenderFormComponent implements AfterViewInit, OnDestroy {
   private readonly syncedFields: Subscription = syncFormControlGroups(this.form, [
     ['customerRepresentative', 'customerAuthorizedName'],
   ]);
-
-  ngAfterViewInit(): void {
-    this.prepareSignatureCanvas();
-  }
 
   ngOnDestroy(): void {
     this.syncedFields.unsubscribe();
@@ -86,11 +79,6 @@ export class SenderFormComponent implements AfterViewInit, OnDestroy {
         return;
       }
 
-      if (!this.hasSignature) {
-        this.errorMessage = 'Lütfen Ejder Turizm paraf / imza alanını doldurun.';
-        return;
-      }
-
       const values = this.form.getRawValue() as Record<string, string>;
       const data: ContractData = {
         senderName: 'Ejder Turizm',
@@ -108,7 +96,7 @@ export class SenderFormComponent implements AfterViewInit, OnDestroy {
         contractDate: values['contractDate'],
         tourCodeName: values['tourCodeName'],
         customerTitle: values['customerTitle'],
-        senderSignatureImage: this.getSignatureImage(),
+        senderSignatureImage: DEFAULT_SENDER_SIGNATURE_IMAGE,
       };
 
       const result = await this.contractService.createContract(data);
@@ -156,61 +144,6 @@ export class SenderFormComponent implements AfterViewInit, OnDestroy {
   protected getVariableDisplayValue(key: ContractVariableKey): string {
     const value = (this.form.getRawValue() as Record<string, string>)[key]?.trim();
     return value || this.getVariablePlaceholder(key);
-  }
-
-  protected beginSignature(event: PointerEvent): void {
-    const canvas = this.senderSignatureCanvas?.nativeElement;
-    const context = canvas?.getContext('2d');
-
-    if (!canvas || !context) {
-      return;
-    }
-
-    canvas.setPointerCapture(event.pointerId);
-    this.drawing = true;
-    this.hasSignature = true;
-    const point = this.getCanvasPoint(event, canvas);
-    context.beginPath();
-    context.moveTo(point.x, point.y);
-  }
-
-  protected drawSignature(event: PointerEvent): void {
-    if (!this.drawing) {
-      return;
-    }
-
-    const canvas = this.senderSignatureCanvas?.nativeElement;
-    const context = canvas?.getContext('2d');
-
-    if (!canvas || !context) {
-      return;
-    }
-
-    const point = this.getCanvasPoint(event, canvas);
-    context.lineTo(point.x, point.y);
-    context.stroke();
-  }
-
-  protected endSignature(event: PointerEvent): void {
-    const canvas = this.senderSignatureCanvas?.nativeElement;
-
-    if (canvas?.hasPointerCapture(event.pointerId)) {
-      canvas.releasePointerCapture(event.pointerId);
-    }
-
-    this.drawing = false;
-  }
-
-  protected clearSignature(): void {
-    const canvas = this.senderSignatureCanvas?.nativeElement;
-    const context = canvas?.getContext('2d');
-
-    if (!canvas || !context) {
-      return;
-    }
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    this.hasSignature = false;
   }
 
   private extractVariables(values: Record<string, string>): Record<string, string> {
@@ -320,34 +253,4 @@ export class SenderFormComponent implements AfterViewInit, OnDestroy {
     return 'paragraph-line';
   }
 
-  private prepareSignatureCanvas(): void {
-    const canvas = this.senderSignatureCanvas?.nativeElement;
-    const context = canvas?.getContext('2d');
-
-    if (!canvas || !context) {
-      return;
-    }
-
-    const rect = canvas.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = Math.max(1, Math.floor(rect.width * scale));
-    canvas.height = Math.max(1, Math.floor(rect.height * scale));
-    context.scale(scale, scale);
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    context.lineWidth = 2.4;
-    context.strokeStyle = '#17120f';
-  }
-
-  private getCanvasPoint(event: PointerEvent, canvas: HTMLCanvasElement): { x: number; y: number } {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    };
-  }
-
-  private getSignatureImage(): string {
-    return this.senderSignatureCanvas?.nativeElement.toDataURL('image/png') ?? '';
-  }
 }
