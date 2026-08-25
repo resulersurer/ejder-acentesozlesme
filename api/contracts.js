@@ -1,4 +1,5 @@
 const { neon } = require('@neondatabase/serverless');
+const nodemailer = require('nodemailer');
 
 const getSql = () => {
   const databaseUrl = process.env.DATABASE_URL;
@@ -8,6 +9,64 @@ const getSql = () => {
   }
 
   return neon(databaseUrl);
+};
+
+const getMailTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const from = process.env.SMTP_FROM || user;
+
+  if (!host || !user || !pass) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port: Number(port) || 587,
+    secure: String(port) === '465',
+    auth: { user, pass },
+  });
+};
+
+const sendContractNotification = async (payload) => {
+  const transporter = getMailTransporter();
+
+  if (!transporter) {
+    console.info('[api/contracts] SMTP is not configured, skipping email notification');
+    return;
+  }
+
+  const recipient = payload?.email || payload?.customerContactInfo;
+
+  if (!recipient) {
+    console.info('[api/contracts] recipient email is missing, skipping email notification');
+    return;
+  }
+
+  const subject = 'Yeni sözleşme kaydedildi';
+  const text = [
+    'Merhaba,',
+    '',
+    'Ejder Turizm tarafından yeni bir sözleşme kaydedilmiştir.',
+    '',
+    `Sözleşme No: ${payload?.contractNo || '-'}`,
+    `Müşteri / Organizatör: ${payload?.customerTitle || payload?.agencyName || '-'}`,
+    `Yetkili: ${payload?.customerRepresentative || payload?.agencyContact || '-'}`,
+    '',
+    'Detaylar için lütfen sistem yöneticisiyle iletişime geçin.',
+    '',
+    'Teşekkürler,',
+    'Ejder Turizm',
+  ].join('\n');
+
+  await transporter.sendMail({
+    from,
+    to: [recipient, 'bilgi@ejderturizm.com.tr'],
+    subject,
+    text,
+  });
 };
 
 const readBody = (body) => {
@@ -116,6 +175,13 @@ const handler = async (req, res) => {
         INSERT INTO contract_drafts (id, payload)
         VALUES (${id}, ${JSON.stringify(payload)}::jsonb)
       `;
+
+      sendContractNotification(payload).catch((error) => {
+        console.error('[api/contracts] email notification failed', {
+          id,
+          message: error instanceof Error ? error.message : error,
+        });
+      });
 
       res.status(201).json({ id });
       return;
