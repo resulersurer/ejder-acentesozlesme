@@ -10,7 +10,6 @@ import { RouterModule } from '@angular/router';
       <a class="nav-brand" routerLink="/">Ejder Acenta Sözleşme</a>
       <div class="nav-links">
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-        <a routerLink="/template" routerLinkActive="active">Sözleşme Metni</a>
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Yeni Sözleşme</a>
       </div>
     </nav>
