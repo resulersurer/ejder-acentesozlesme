@@ -30,32 +30,25 @@ const getMailTransporter = () => {
   });
 };
 
-const sendContractNotification = async (payload) => {
+const sendSignedContractNotification = async (payload) => {
   const transporter = getMailTransporter();
 
   if (!transporter) {
-    console.info('[api/contracts] SMTP is not configured, skipping email notification');
+    console.info('[api/contracts] SMTP is not configured, skipping signed contract email');
     return;
   }
 
-  const recipient = payload?.email || payload?.customerContactInfo;
-
-  if (!recipient) {
-    console.info('[api/contracts] recipient email is missing, skipping email notification');
-    return;
-  }
-
-  const subject = 'Yeni sözleşme kaydedildi';
+  const subject = 'Sözleşme imzalandı';
   const text = [
     'Merhaba,',
     '',
-    'Ejder Turizm tarafından yeni bir sözleşme kaydedilmiştir.',
+    'Bir sözleşme müşteri tarafından onaylanıp imzalandı.',
     '',
     `Sözleşme No: ${payload?.contractNo || '-'}`,
     `Müşteri / Organizatör: ${payload?.customerTitle || payload?.agencyName || '-'}`,
     `Yetkili: ${payload?.customerRepresentative || payload?.agencyContact || '-'}`,
-    '',
-    'Detaylar için lütfen sistem yöneticisiyle iletişime geçin.',
+    `İmzalayan: ${payload?.signerName || '-'}`,
+    `İmza Tarihi: ${payload?.signDate || '-'}`,
     '',
     'Teşekkürler,',
     'Ejder Turizm',
@@ -63,7 +56,7 @@ const sendContractNotification = async (payload) => {
 
   await transporter.sendMail({
     from,
-    to: [recipient, 'bilgi@ejderturizm.com.tr'],
+    to: ['satis@ejderturizm.com.tr', 'vipoperation@ejderturizm.com.tr'],
     subject,
     text,
   });
@@ -203,6 +196,15 @@ const handler = async (req, res) => {
         WHERE id = ${id}
         RETURNING payload, created_at, updated_at
       `;
+
+      if (payload?.status === 'signed') {
+        sendSignedContractNotification(payload).catch((error) => {
+          console.error('[api/contracts] signed contract email notification failed', {
+            id,
+            message: error instanceof Error ? error.message : error,
+          });
+        });
+      }
 
       if (rows.length === 0) {
         res.status(404).json({ message: 'draft not found' });
