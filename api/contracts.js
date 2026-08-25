@@ -1,5 +1,6 @@
 const { neon } = require('@neondatabase/serverless');
 const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
 
 const getSql = () => {
   const databaseUrl = process.env.DATABASE_URL;
@@ -30,6 +31,113 @@ const getMailTransporter = () => {
   });
 };
 
+const toBase64Buffer = (dataUrl) => {
+  if (!dataUrl || typeof dataUrl !== 'string') {
+    return null;
+  }
+
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    return null;
+  }
+
+  return Buffer.from(match[2], 'base64');
+};
+
+const generateContractPdf = (payload) => {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const buffers = [];
+
+    doc.on('data', (chunk) => buffers.push(chunk));
+    doc.on('end', () => resolve(Buffer.concat(buffers)));
+    doc.on('error', reject);
+
+    const contractText = payload?.contractText || payload?.contractTemplate || '';
+    const lines = String(contractText).split('\n');
+    const signatureImage = payload?.signatureImage || payload?.senderSignatureImage;
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        doc.moveDown();
+        return;
+      }
+
+      if (
+        trimmed.startsWith('EJDER TURİZM') ||
+        trimmed.startsWith('ÖZEL') ||
+        trimmed.startsWith('KISALTILMIŞ') ||
+        trimmed === 'SÖZLEŞME ÖZETİ' ||
+        trimmed === 'EJDER TURİZM' ||
+        trimmed === 'KURUMSAL MÜŞTERİ / GRUP ORGANİZATÖRÜ' ||
+        trimmed === 'KİŞİ SAYISI VE FİYAT BİLGİLERİ' ||
+        trimmed === 'FİYAT VE ÖDEME PLANI' ||
+        trimmed === 'EKLER' ||
+        trimmed === 'İMZA SAYFASI' ||
+        trimmed.startsWith('MADDE')
+      ) {
+        doc.moveDown(0.5);
+        doc.fontSize(13).font('Helvetica-Bold').text(trimmed);
+        doc.moveDown(0.5);
+        return;
+      }
+
+      doc.fontSize(10).font('Helvetica').text(trimmed);
+    });
+
+    if (signatureImage) {
+      const imageBuffer = toBase64Buffer(signatureImage);
+      if (imageBuffer) {
+        doc.moveDown(1);
+        doc.image(imageBuffer, { width: 180 });
+      }
+    }
+
+    doc.end();
+  });
+};
+
+const sendContractNotification = async (payload) => {
+  const transporter = getMailTransporter();
+
+  if (!transporter) {
+    console.info('[api/contracts] SMTP is not configured, skipping email notification');
+    return;
+  }
+
+  const recipient = payload?.email || payload?.customerContactInfo;
+
+  if (!recipient) {
+    console.info('[api/contracts] recipient email is missing, skipping email notification');
+    return;
+  }
+
+  const subject = 'Yeni sözleşme kaydedildi';
+  const text = [
+    'Merhaba,',
+    '',
+    'Ejder Turizm tarafından yeni bir sözleşme kaydedilmiştir.',
+    '',
+    `Sözleşme No: ${payload?.contractNo || '-'}`,
+    `Müşteri / Organizatör: ${payload?.customerTitle || payload?.agencyName || '-'}`,
+    `Yetkili: ${payload?.customerRepresentative || payload?.agencyContact || '-'}`,
+    '',
+    'Detaylar için lütfen sistem yöneticisiyle iletişime geçin.',
+    '',
+    'Teşekkürler,',
+    'Ejder Turizm',
+  ].join('\n');
+
+  await transporter.sendMail({
+    from,
+    to: [recipient, 'bilgi@ejderturizm.com.tr'],
+    subject,
+    text,
+  });
+};
+
 const sendSignedContractNotification = async (payload) => {
   const transporter = getMailTransporter();
 
@@ -54,11 +162,25 @@ const sendSignedContractNotification = async (payload) => {
     'Ejder Turizm',
   ].join('\n');
 
+  const attachments = [];
+  try {
+    const pdfBuffer = await generateContractPdf(payload);
+    attachments.push({
+      filename: `sozlesme-${payload?.contractNo || payload?.id || 'dosya'}.pdf`,
+      content: pdfBuffer,
+    });
+  } catch (error) {
+    console.error('[api/contracts] pdf generation failed', {
+      message: error instanceof Error ? error.message : error,
+    });
+  }
+
   await transporter.sendMail({
     from,
     to: ['satis@ejderturizm.com.tr', 'vipoperation@ejderturizm.com.tr'],
     subject,
     text,
+    attachments,
   });
 };
 
