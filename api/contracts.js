@@ -23,12 +23,15 @@ const getMailTransporter = () => {
     return null;
   }
 
-  return nodemailer.createTransport({
-    host,
-    port: Number(port) || 587,
-    secure: String(port) === '465',
-    auth: { user, pass },
-  });
+  return {
+    transporter: nodemailer.createTransport({
+      host,
+      port: Number(port) || 587,
+      secure: String(port) === '465',
+      auth: { user, pass },
+    }),
+    from,
+  };
 };
 
 const toBase64Buffer = (dataUrl) => {
@@ -100,9 +103,9 @@ const generateContractPdf = (payload) => {
 };
 
 const sendContractNotification = async (payload, id, req) => {
-  const transporter = getMailTransporter();
+  const { transporter, from } = getMailTransporter() || {};
 
-  if (!transporter) {
+  if (!transporter || !from) {
     console.info('[api/contracts] SMTP is not configured, skipping email notification');
     return;
   }
@@ -144,9 +147,9 @@ const sendContractNotification = async (payload, id, req) => {
 };
 
 const sendSignedContractNotification = async (payload) => {
-  const transporter = getMailTransporter();
+  const { transporter, from } = getMailTransporter() || {};
 
-  if (!transporter) {
+  if (!transporter || !from) {
     console.info('[api/contracts] SMTP is not configured, skipping signed contract email');
     return;
   }
