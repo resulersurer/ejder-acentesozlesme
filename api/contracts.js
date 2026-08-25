@@ -99,7 +99,7 @@ const generateContractPdf = (payload) => {
   });
 };
 
-const sendContractNotification = async (payload) => {
+const sendContractNotification = async (payload, id, req) => {
   const transporter = getMailTransporter();
 
   if (!transporter) {
@@ -114,6 +114,9 @@ const sendContractNotification = async (payload) => {
     return;
   }
 
+  const appUrl = process.env.APP_URL || (req?.headers?.origin ? req.headers.origin : `https://${process.env.VERCEL_URL}`);
+  const contractLink = `${appUrl}/sign/${id}`;
+
   const subject = 'Yeni sözleşme kaydedildi';
   const text = [
     'Merhaba,',
@@ -123,6 +126,8 @@ const sendContractNotification = async (payload) => {
     `Sözleşme No: ${payload?.contractNo || '-'}`,
     `Müşteri / Organizatör: ${payload?.customerTitle || payload?.agencyName || '-'}`,
     `Yetkili: ${payload?.customerRepresentative || payload?.agencyContact || '-'}`,
+    '',
+    `Sözleşmeyi görüntülemek ve imzalamak için linke tıklayın: ${contractLink}`,
     '',
     'Detaylar için lütfen sistem yöneticisiyle iletişime geçin.',
     '',
@@ -291,7 +296,7 @@ const handler = async (req, res) => {
         VALUES (${id}, ${JSON.stringify(payload)}::jsonb)
       `;
 
-      sendContractNotification(payload).catch((error) => {
+      sendContractNotification(payload, id, req).catch((error) => {
         console.error('[api/contracts] email notification failed', {
           id,
           message: error instanceof Error ? error.message : error,
