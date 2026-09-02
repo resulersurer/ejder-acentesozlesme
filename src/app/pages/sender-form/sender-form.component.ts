@@ -69,7 +69,12 @@ export class SenderFormComponent implements OnDestroy {
 
   protected get missingRequiredCount(): number {
     const values = this.form.getRawValue() as Record<string, string>;
-    return CONTRACT_VARIABLES.filter((field) => this.isRequired(field.key) && !values[field.key]?.trim()).length;
+    return CONTRACT_VARIABLES.filter(
+      (field) =>
+        this.templateText.includes(`{{${field.key}}}`) &&
+        this.isRequired(field.key) &&
+        !values[field.key]?.trim()
+    ).length;
   }
 
   protected async submitForm(): Promise<void> {
