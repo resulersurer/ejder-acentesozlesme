@@ -1,0 +1,27 @@
+<header class="site-header">
+  <a class="brand" routerLink="/" aria-label="Ejder Turizm ana sayfa">
+    <span class="brand-mark">
+      <img src="assets/ejder-logo.png" alt="Ejder Turizm" />
+    </span>
+    <span class="brand-copy">
+      <strong>Ejder Turizm</strong>
+      <small>Sözleşme Portalı</small>
+    </span>
+  </a>
+
+  <nav class="nav-links" aria-label="Sözleşme menüsü">
+    <div class="nav-cluster">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Grup Paket</a>
+      <a routerLink="/grup-paket-listesi" routerLinkActive="active">Grup Paket Listesi</a>
+    </div>
+
+    <div class="nav-cluster">
+      <a routerLink="/bireysel-katilimli-ozel-grup" routerLinkActive="active">
+        Bireysel Katılımlı Özel Grup
+      </a>
+      <a routerLink="/bireysel-katilimli-ozel-grup-listesi" routerLinkActive="active">
+        Bireysel Katılımlı Özel Grup Listesi
+      </a>
+    </div>
+  </nav>
+</header>
