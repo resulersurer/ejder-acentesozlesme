@@ -119,6 +119,123 @@ Paraf / İmza: __________________
 Kurumsal Müşteri Yetkilisi: {{customerAuthorizedName}}
 Paraf / İmza: __________________`;
 
+export const INDIVIDUAL_PARTICIPATION_GROUP_CONTRACT_TEMPLATE = `EJDER TURİZM
+BİREYSEL KATILIMLI ÖZEL GRUP PAKET TUR SÖZLEŞMESİ
+
+SÖZLEŞME ÖZETİ
+Sözleşme No / Tarihi: {{contractNo}} / {{contractDate}}
+Tur Kodu / Adı: {{tourCodeName}}
+Tur Tarihleri / Varış Yeri: {{tourStartDate}} - {{tourEndDate}} / {{destination}}
+Katılımcı: {{participantName}}
+Katılımcı İletişim: {{participantContactInfo}}
+
+ORTAK GRUP VE TUR BİLGİLERİ
+Grup Koordinatörü / İrtibat Kişisi: {{groupCoordinatorName}}
+Koordinatör İletişim: {{groupCoordinatorContact}}
+Son Kayıt / Değerlendirme Tarihi: {{groupRegistrationDeadline}}
+Özel Grup Fiyatı İçin Gerekli Asgari Kesin Kayıtlı Katılımcı Sayısı: {{minimumPax}} kişi
+Kontenjan / Azami Katılımcı Sayısı: {{groupQuota}} kişi
+Buluşma / Hareket Noktası: {{tourMeetingPoint}}
+
+KATILIMCIYA ÖZEL FİYAT VE ÖDEME PLANI
+Oda Türü / Oda Eşi: {{roomType}} / {{roommateName}}
+Katılımcı Paket Bedeli: Vergiler dahil {{packagePrice}} {{currency}}
+Ödeme Planı: {{participantPaymentPlan}}
+Ek Hizmet ve Özel Talepler: {{extraServices}}
+Tek Kişilik Oda veya Doluluk Farkı: {{singleRoomSupplement}}
+
+MADDE 1 - SÖZLEŞMENİN KONUSU, YAPISI VE BELGELER
+Bu sözleşme, Katılımcının yukarıda tanımlanan bireysel katılımlı özel grup paket turuna kendi adına veya lehine sözleşme yapılan kişi adına katılımına ilişkindir. Ejder Turizm ile her katılımcı arasında ayrı bir paket tur sözleşmesi kurulur; her rezervasyon ayrı takip edilir.
+
+Aynı özel gruptaki katılımcılara uygulanacak ortak fiyat, kayıt dönemi, kontenjan, asgari katılım, kesinleşme ve operasyon şartları bu sözleşmede düzenlenmiştir. Bu ortak şartlar katılımcılar arasında ortak borç, adi ortaklık, temsil, kefalet veya müteselsil sorumluluk doğurmaz.
+
+Bu sözleşme; Ek-1 ayrıntılı tur programı ve ön bilgilendirme broşürü, Ek-2 katılımcıya ait rezervasyon, oda türü, oda eşleşmesi ve özel talep bilgileri, Ek-3 KVKK aydınlatma metni, Ek-4 zorunlu paket tur sigortası bilgileri ve varsa Ek-5 ek hizmet talep ve onay formu ile bir bütündür.
+
+MADDE 2 - GRUP KOORDİNATÖRÜ / İRTİBAT KİŞİSİ
+Varsa Grup Koordinatörü yalnızca grup ile Ejder Turizm arasındaki iletişimi ve organizasyonu kolaylaştıran irtibat kişisidir. Katılımcının sözleşme tarafı, temsilcisi veya ödeme sorumlusu değildir; kendisine ayrıca yazılı temsil yetkisi verilmedikçe Katılımcı adına sözleşme kuramaz, değiştiremez, feshedemez veya bağlayıcı beyanda bulunamaz.
+
+Grup Koordinatörü, Ejder Turizm ile ayrıca imzalayacağı açık ve yazılı bir sözleşmeyle özel bir yükümlülük üstlenmedikçe diğer katılımcıların tur bedellerinden, eksik veya geciken ödemelerinden, bireysel iptal ve no-show durumlarından, pasaport/vize sorunlarından, oda farklarından veya diğer kişisel yükümlülüklerinden sorumlu değildir.
+
+MADDE 3 - ÖZEL GRUP FİYATI, EŞİT ŞARTLAR VE SONRADAN KATILIM
+Özel grup fiyatı, son kayıt/değerlendirme tarihine kadar belirlenen kontenjan içinde, aynı ulaşım ücret sınıfı ile aynı oda ve hizmet kategorisinde kesin kayıt yaptıran ve ödeme planına uyan katılımcılara uygulanır. Farklı kayıt dönemi, ulaşım ücret sınıfı, oda veya hizmet kategorisi için farklı bedel uygulanması eşit şart ilkesine aykırılık oluşturmaz.
+
+Bireysel kesin kayıt; bu sözleşmenin ve eklerinin kurulması, rezervasyon için gerekli bilgilerin verilmesi ve ilk ödemenin tam ve süresinde yapılmasıyla oluşur. Salt isim bildirilmesi, ön talep veya koordinatör listesinde yer alma kesin kayıt sayılmaz.
+
+Son kayıt tarihinden sonra veya grup uçak/otel kontenjanı ya da ilgili ücret sınıfı kapandıktan sonra katılmak isteyen kişi için özel grup fiyatı otomatik olarak garanti edilmez. Güncel uçak, otel, transfer, oda ve yerel hizmet maliyetleri üzerinden ayrı teklif verilebilir.
+
+MADDE 4 - ASGARİ KATILIM, TURUN KESİNLEŞMESİ VE SAYININ AZALMASI
+Özel grup fiyatı için gerekli asgari kesin kayıtlı katılımcı sayısına son kayıt/değerlendirme tarihinde ulaşılmasıyla tur bu modelle kesinleşmiş sayılır ve Ejder Turizm sonucu Katılımcılara yazılı olarak veya kalıcı veri saklayıcısıyla bildirir.
+
+Asgari sayıya değerlendirme tarihinde ulaşılamazsa Ejder Turizm turu süresinde iptal edebilir, daha düşük kişi sayısına uygun yeni fiyat veya operasyon önerebilir ya da eşdeğer/alternatif program sunabilir. Yeni fiyat veya alternatif program Katılımcının açık kabulü olmadıkça bağlayıcı değildir.
+
+Tur kesinleştikten sonra bireysel fesih, no-show, ödeme temerrüdü veya diğer kişisel nedenlerle kesin kayıtlı katılımcı sayısı asgari sayının altına düşerse Ejder Turizm mevcut fiyat ve şartlarla devam edebilir, uygun alternatif operasyon önerebilir veya mevzuata uygun şekilde iptal hakkını kullanabilir.
+
+MADDE 5 - BİREYSEL ÖDEME, GECİKME VE REZERVASYON
+Her ödeme yalnızca ilgili Katılımcının rezervasyonuna işlenir. Katılımcı yalnızca kendi sözleşmesindeki bedel ve yazılı olarak onayladığı ek hizmetlerden sorumludur. Başka bir katılımcının ödeme yapmaması veya gecikmesi, Katılımcıyı borçlu, kefil veya müteselsil sorumlu hale getirmez.
+
+İlk ödemenin tam ve zamanında yapılmasıyla Ejder Turizm'in bu Katılımcı için rezervasyon yapma yükümlülüğü başlar. Sonraki bir ödeme gecikirse Katılımcıya yazılı olarak veya kalıcı veri saklayıcısıyla makul ve en az üç günlük ek süre verilir.
+
+MADDE 6 - ODA EŞLEŞMESİ VE EŞLEŞEN KİŞİNİN İPTALİ
+DBL, TWN ve TRPL oda fiyatları, Ek-2'de oda eşi olarak belirtilen kişilerin birlikte konaklaması ve ilgili oda kapasitesinin korunması esas alınarak belirlenir. Oda eşlerinden birinin iptali, no-show durumu, ödeme yükümlülüğünü yerine getirmemesi veya oda paylaşımından vazgeçmesi yalnızca ilgili kişilerin oda doluluk düzenini etkiler.
+
+Yeni oda eşleşmesi sağlanamaz veya Katılımcı tarafından kabul edilmezse oda rezervasyonu, müsaitlik bulunması şartıyla SGL oda esasına dönüştürülebilir. Sözleşme kurulurken gösterilmiş oda farkı veya objektif hesap yöntemi dışında Katılımcının sonradan açık ve yazılı kabulü olmadan oda farkı tahsil edilemez.
+
+MADDE 7 - KATILIMCININ BİREYSEL İPTALİ, DEVİR VE NO-SHOW
+Katılımcı fesih talebini yazılı olarak veya kalıcı veri saklayıcısıyla bildirmek suretiyle yalnızca kendi sözleşmesini feshedebilir. Bu fesih diğer katılımcıların sözleşmelerini sona erdirmez.
+
+Turun başlamasından en az otuz gün önce yapılan fesihte, ödenmesi zorunlu vergi, harç ve benzeri yasal yükümlülüklerden doğan masraflar dışında kesinti yapılmaz; iade en geç on dört gün içinde yapılır. Turun başlamasına otuz günden az kala yapılan fesih veya no-show halinde mevzuat ve sözleşmede bildirilen gerçek, makul ve belgelendirilebilir giderler dikkate alınır.
+
+Katılımcı, tura devam etmesinin mümkün olmaması halinde hareketten en az yedi gün önce yazılı bildirimle sözleşmesini turun tüm koşullarını sağlayan üçüncü kişiye devredebilir.
+
+MADDE 8 - PASAPORT, VİZE, SAĞLIK, ÖZEL TALEPLER VE DAVRANIŞ
+Pasaport, vize, transit vize, yurt dışı çıkış harcı, muvafakatname, aşı ve ülkeye giriş şartlarının yerine getirilmesi Katılımcıya aittir. Katılımcının sağlık durumu, hareket kısıtlılığı, erişilebilirlik, özel yardım ve beslenme ihtiyacı sözleşmeden önce yazılı olarak bildirilir.
+
+Ortak hareket noktası dışındaki bir şehirden bağlantılı uçuş, ilave transfer, özel araç tahsisi, farklı havalimanından katılım, ilave bagaj, koltuk seçimi, özel yemek, farklı oda/konaklama kategorisi ve benzeri bireysel talepler ortak paket tur bedeline dahil değildir; ancak yazılı kabul ile kesinleşir.
+
+MADDE 9 - SÖZLEŞME DEĞİŞİKLİĞİ, İPTAL VE EJDER TURİZM'İN SORUMLULUĞU
+Tur başlamadan önce Katılımcıdan kaynaklanmayan önemli bir değişiklik yapılırsa veya tur iptal edilirse Katılımcının mevzuattaki seçimlik hakları uygulanır. Esaslı değişiklik ve fiyat etkisi Katılımcıya derhal bildirilir.
+
+Tur sırasında esaslı bir hizmet sağlanamazsa Katılımcıya ilave maliyet getirmeyen eşdeğer alternatif sunulur. Eksiklik Katılımcı tarafından derhal Ejder Turizm'e veya ilgili hizmet sağlayıcıya kalıcı veri saklayıcısı ile bildirilir; giderilmezse Katılımcının bedel indirimi ve diğer kanuni hakları saklıdır.
+
+MADDE 10 - KİŞİSEL VERİLER VE BİLDİRİMLER
+Ejder Turizm, kimlik, pasaport, iletişim, seyahat, oda ve zorunlu özel talep verilerini 6698 sayılı Kanuna uygun ve turun kurulması/yürütülmesi için gerekli ölçüde işler; aydınlatma metnini ayrıca verir.
+
+Katılımcıya ilişkin sözleşmesel bildirimler bildirilen e-posta adresine, telefon numarasına veya varsa KEP adresine yazılı olarak ya da kalıcı veri saklayıcısıyla yapılır. Adres ve iletişim değişiklikleri üç iş günü içinde bildirilir.
+
+MADDE 11 - UYUŞMAZLIK VE SON HÜKÜMLER
+Türk hukuku uygulanır. Katılımcının tüketici hakem heyeti, tüketici mahkemesi ve kanunen yetkili diğer mercilere başvuru hakları saklıdır.
+
+Katılımcı, bu sözleşmeyi ve eklerini okuyup bir nüshasını kağıt üzerinde veya kalıcı veri saklayıcısıyla teslim aldığını; kendi ödeme ve iptal sorumluluğunun diğer katılımcılardan ayrı olduğunu; ortak grup ve tur bilgilerini, asgari kesin kayıtlı katılımcı sayısını, turun kesinleşme ve yetersiz katılım şartlarını, oda türü/oda doluluk farklarını ve ek hizmetlerin kabul usulünü öğrendiğini beyan eder.
+
+EKLER
+Ek-1: Ayrıntılı tur programı ve ön bilgilendirme broşürü
+Ek-2: Katılımcıya ait rezervasyon, oda türü, oda eşleşmesi ve özel talep bilgileri
+Ek-3: KVKK aydınlatma metni
+Ek-4: Zorunlu paket tur sigortası bilgileri ve poliçe/sertifika
+Ek-5: Ek hizmet talep ve onay formu (varsa)
+
+ÖZEL BİLGİLENDİRME VE İMZALAR
+Katılımcı; aynı gruptaki her kişiyle ayrı sözleşme kurulduğunu, yalnızca kendi rezervasyon, ödeme, iptal, no-show, pasaport/vize ve kişisel yükümlülüklerinden sorumlu olduğunu, başka katılımcıların borçlarından sorumlu olmadığını, grup koordinatörünün ayrıca yazılı yükümlülük üstlenmedikçe mali sorumluluğu veya temsil yetkisi bulunmadığını özellikle okuyup anladığını kabul eder.
+
+EJDER TURİZM
+Unvan: EJDER HAVACILIK TAŞIMA VE TURİZM LTD. ŞTİ.
+Yetkili / Tarih: {{ejderAuthorizedName}} / {{contractDate}}
+Kaşe / İmza:
+
+KATILIMCI
+Ad Soyad: {{participantName}}
+T.C. / Pasaport No: {{participantIdentity}}
+Adres: {{participantAddress}}
+İletişim: {{participantContactInfo}}
+Yetkili / Tarih: {{customerAuthorizedName}} / {{contractDate}}
+İmza:
+
+Ejder Turizm Yetkilisi: {{ejderAuthorizedName}}
+Paraf / İmza: __________________
+
+Katılımcı: {{customerAuthorizedName}}
+Paraf / İmza: __________________`;
+
 export const CONTRACT_VARIABLES = [
   { key: 'contractNo', label: 'Sözleşme no', placeholder: 'KG-2026-001', group: 'Sözleşme', required: true },
   { key: 'contractDate', label: 'Sözleşme tarihi', placeholder: '10.08.2026', group: 'Sözleşme', required: true },
@@ -150,6 +267,21 @@ export const CONTRACT_VARIABLES = [
   { key: 'ejderAuthorizedName', label: 'Ejder yetkilisi', placeholder: 'Ad Soyad', group: 'İmza', required: true },
   { key: 'customerAuthorizedName', label: 'Müşteri yetkilisi', placeholder: 'Ad Soyad', group: 'İmza', required: true },
   { key: 'pageCount', label: 'Sayfa sayısı', placeholder: '...', group: 'İmza', required: false },
+  { key: 'groupCoordinatorName', label: 'Grup koordinatörü', placeholder: 'Ad Soyad', group: 'Bireysel grup', required: false },
+  { key: 'groupCoordinatorContact', label: 'Koordinatör iletişim', placeholder: 'Telefon / e-posta', group: 'Bireysel grup', required: false },
+  { key: 'groupRegistrationDeadline', label: 'Son kayıt / değerlendirme', placeholder: '20.08.2026 saat 17:00', group: 'Bireysel grup', required: true },
+  { key: 'groupQuota', label: 'Kontenjan / azami kişi', placeholder: '40', group: 'Bireysel grup', required: false },
+  { key: 'tourMeetingPoint', label: 'Buluşma / hareket noktası', placeholder: 'İstanbul Havalimanı', group: 'Bireysel grup', required: true },
+  { key: 'participantName', label: 'Katılımcı ad soyad', placeholder: 'Ad Soyad', group: 'Katılımcı', required: true },
+  { key: 'participantIdentity', label: 'T.C. / pasaport no', placeholder: '12345678900', group: 'Katılımcı', required: true },
+  { key: 'participantAddress', label: 'Katılımcı adresi', placeholder: 'Adres', group: 'Katılımcı', required: true },
+  { key: 'participantContactInfo', label: 'Katılımcı iletişim', placeholder: '0555... / mail@ornek.com', group: 'Katılımcı', required: true },
+  { key: 'roomType', label: 'Oda türü', placeholder: 'DBL / TWN / TRPL / SGL', group: 'Katılımcı', required: true },
+  { key: 'roommateName', label: 'Oda eşi', placeholder: 'Ad Soyad / yok', group: 'Katılımcı', required: false },
+  { key: 'packagePrice', label: 'Katılımcı paket bedeli', placeholder: '75.000', group: 'Katılımcı fiyat', required: true },
+  { key: 'participantPaymentPlan', label: 'Katılımcı ödeme planı', placeholder: '25.000 TL ön ödeme, bakiye...', group: 'Katılımcı fiyat', required: true },
+  { key: 'extraServices', label: 'Ek hizmet / özel talep', placeholder: 'Yok / açıklama', group: 'Katılımcı fiyat', required: false },
+  { key: 'singleRoomSupplement', label: 'Tek kişi oda farkı', placeholder: 'Yok / 10.000 TL', group: 'Katılımcı fiyat', required: false },
 ] as const;
 
 export type ContractVariableKey = (typeof CONTRACT_VARIABLES)[number]['key'];
@@ -188,4 +320,19 @@ export const CONTRACT_VARIABLE_OWNERS: Record<ContractVariableKey, ContractVaria
   ejderAuthorizedName: 'sender',
   customerAuthorizedName: 'sender',
   pageCount: 'sender',
+  groupCoordinatorName: 'sender',
+  groupCoordinatorContact: 'sender',
+  groupRegistrationDeadline: 'sender',
+  groupQuota: 'sender',
+  tourMeetingPoint: 'sender',
+  participantName: 'sender',
+  participantIdentity: 'sender',
+  participantAddress: 'sender',
+  participantContactInfo: 'sender',
+  roomType: 'sender',
+  roommateName: 'sender',
+  packagePrice: 'sender',
+  participantPaymentPlan: 'sender',
+  extraServices: 'sender',
+  singleRoomSupplement: 'sender',
 };

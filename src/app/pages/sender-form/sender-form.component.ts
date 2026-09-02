@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ContractData, ContractService, DEFAULT_SENDER_SIGNATURE_IMAGE } from '../../contract.service';
 import { CONTRACT_VARIABLES, CONTRACT_VARIABLE_OWNERS, ContractVariableKey } from '../../contract-template';
 import { getContractTemplate, getVariableSettings } from '../../contract-template-storage';
+import { getContractKindConfig } from '../../contract-types';
 import { syncFormControlGroups } from '../../form-field-sync';
 
 type TemplatePart =
@@ -29,12 +30,14 @@ export class SenderFormComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly contractService = inject(ContractService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected saving = false;
   protected errorMessage = '';
   protected readonly senderSignatureImage = DEFAULT_SENDER_SIGNATURE_IMAGE;
-  protected readonly templateText = getContractTemplate();
-  protected readonly variableSettings = getVariableSettings();
+  protected readonly contractKindConfig = getContractKindConfig(this.route.snapshot.data['contractKind']);
+  protected readonly templateText = getContractTemplate(this.contractKindConfig.kind);
+  protected readonly variableSettings = getVariableSettings(this.contractKindConfig.kind);
   protected readonly variables = CONTRACT_VARIABLES;
   protected readonly templateLines: TemplateLine[] = this.templateText.split('\n').map((line) => ({
     value: line,
@@ -81,12 +84,13 @@ export class SenderFormComponent implements OnDestroy {
 
       const values = this.form.getRawValue() as Record<string, string>;
       const data: ContractData = {
+        contractKind: this.contractKindConfig.kind,
         senderName: 'Ejder Turizm',
-        agencyName: values['customerTitle'],
-        agencyContact: values['customerRepresentative'],
+        agencyName: values['customerTitle'] || values['participantName'],
+        agencyContact: values['customerRepresentative'] || values['participantName'],
         effectiveDate: values['contractDate'],
-        email: values['customerContactInfo'],
-        phone: values['customerContactInfo'],
+        email: values['customerContactInfo'] || values['participantContactInfo'],
+        phone: values['customerContactInfo'] || values['participantContactInfo'],
         notes: values['tourCodeName'],
         contractText: this.renderedContractText,
         contractTemplate: this.templateText,
@@ -95,12 +99,12 @@ export class SenderFormComponent implements OnDestroy {
         contractNo: values['contractNo'],
         contractDate: values['contractDate'],
         tourCodeName: values['tourCodeName'],
-        customerTitle: values['customerTitle'],
+        customerTitle: values['customerTitle'] || values['participantName'],
         senderSignatureImage: DEFAULT_SENDER_SIGNATURE_IMAGE,
       };
 
       const result = await this.contractService.createContract(data);
-      await this.router.navigate(['/dashboard']);
+      await this.router.navigate([this.contractKindConfig.listPath]);
     } catch (error) {
       this.errorMessage = error instanceof Error ? error.message : 'Hata oluştu';
     } finally {
@@ -187,7 +191,7 @@ export class SenderFormComponent implements OnDestroy {
       String(now.getSeconds()).padStart(2, '0'),
     ].join('');
 
-    return `KG-${date}-${time}`;
+    return `${this.contractKindConfig.contractNoPrefix}-${date}-${time}`;
   }
 
   private parseLine(line: string): TemplatePart[] {

@@ -1,10 +1,10 @@
 <div class="page-shell">
   <header class="hero">
     <div>
-      <p class="eyebrow">Kapalı grup sözleşmesi</p>
-      <h1>Sözleşme metnini hazırla</h1>
+      <p class="eyebrow">{{ contractKindConfig.eyebrow }}</p>
+      <h1>{{ contractKindConfig.label }} sözleşmesini hazırla</h1>
       <p class="hero-copy">
-        Kutulu alanları metnin üzerinde doldur. Zorunlu alanlar tamamlandığında sözleşme dashboard'a kaydedilir.
+        Kutulu alanları metnin üzerinde doldur. Zorunlu alanlar tamamlandığında sözleşme ilgili listeye kaydedilir.
       </p>
     </div>
 
@@ -62,7 +62,7 @@
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
       <button class="primary-button" type="submit" [disabled]="saving">
-        {{ saving ? 'Kaydediliyor...' : 'Sözleşmeyi dashboard’a kaydet' }}
+        {{ saving ? 'Kaydediliyor...' : 'Sözleşmeyi ' + contractKindConfig.listLabel + 'ne kaydet' }}
       </button>
     </section>
   </form>

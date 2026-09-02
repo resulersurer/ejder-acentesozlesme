@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ContractRecord, ContractService } from '../../contract.service';
+import { ContractKind, DEFAULT_CONTRACT_KIND, getContractKindConfig } from '../../contract-types';
 
 @Component({
   selector: 'app-contracts-dashboard',
@@ -13,6 +14,8 @@ import { ContractRecord, ContractService } from '../../contract.service';
 })
 export class ContractsDashboardComponent implements OnInit {
   private readonly contractService = inject(ContractService);
+  private readonly route = inject(ActivatedRoute);
+  protected readonly contractKindConfig = getContractKindConfig(this.route.snapshot.data['contractKind']);
 
   protected readonly contracts = signal<ContractRecord[]>([]);
   protected readonly query = signal('');
@@ -25,20 +28,24 @@ export class ContractsDashboardComponent implements OnInit {
   protected readonly copiedPdfId = signal('');
   protected readonly deletingId = signal('');
 
-  protected readonly signedCount = computed(
-    () => this.contracts().filter((contract) => contract.status === 'signed').length
+  protected readonly visibleContracts = computed(() =>
+    this.contracts().filter((contract) => this.getContractKind(contract) === this.contractKindConfig.kind)
   );
 
-  protected readonly pendingCount = computed(() => this.contracts().length - this.signedCount());
+  protected readonly signedCount = computed(
+    () => this.visibleContracts().filter((contract) => contract.status === 'signed').length
+  );
+
+  protected readonly pendingCount = computed(() => this.visibleContracts().length - this.signedCount());
 
   protected readonly filteredContracts = computed(() => {
     const query = this.query().trim().toLocaleLowerCase('tr-TR');
 
     if (!query) {
-      return this.contracts();
+      return this.visibleContracts();
     }
 
-    return this.contracts().filter((contract) => {
+    return this.visibleContracts().filter((contract) => {
       const searchable = [
         contract.contractNo,
         contract.customerTitle,
@@ -49,6 +56,7 @@ export class ContractsDashboardComponent implements OnInit {
         contract.email,
         contract.phone,
         contract.signerName,
+        this.contractKindConfig.label,
         contract.contractText,
       ]
         .filter(Boolean)
@@ -130,6 +138,10 @@ export class ContractsDashboardComponent implements OnInit {
     return contract.status === 'signed' ? 'Onaylandı' : 'Onay bekliyor';
   }
 
+  protected get totalVisibleCount(): number {
+    return this.visibleContracts().length;
+  }
+
   protected getShareLink(contract: ContractRecord): string {
     return `${window.location.origin}/sign/${contract.id}`;
   }
@@ -206,6 +218,10 @@ export class ContractsDashboardComponent implements OnInit {
 
   protected downloadPdf(contract: ContractRecord): void {
     window.open(this.getPdfLink(contract), '_blank', 'noopener,noreferrer');
+  }
+
+  private getContractKind(contract: ContractRecord): ContractKind {
+    return (contract.contractKind as ContractKind | undefined) ?? DEFAULT_CONTRACT_KIND;
   }
 
   /*

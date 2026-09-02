@@ -9,8 +9,23 @@ import { RouterModule } from '@angular/router';
     <nav class="topnav">
       <a class="nav-brand" routerLink="/">Ejder Acenta Sözleşme</a>
       <div class="nav-links">
-        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Yeni Sözleşme</a>
+        <div class="nav-group">
+          <div class="nav-group-links">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Grup Paket</a>
+            <a routerLink="/grup-paket-listesi" routerLinkActive="active">Grup Paket Listesi</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-links">
+            <a routerLink="/bireysel-katilimli-ozel-grup" routerLinkActive="active">
+              Bireysel Katılımlı Özel Grup
+            </a>
+            <a routerLink="/bireysel-katilimli-ozel-grup-listesi" routerLinkActive="active">
+              Bireysel Katılımlı Özel Grup Listesi
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
     <router-outlet></router-outlet>
@@ -42,12 +57,21 @@ import { RouterModule } from '@angular/router';
 
       .nav-links {
         display: flex;
-        gap: 6px;
+        gap: 18px;
         flex-wrap: wrap;
         justify-content: flex-end;
       }
 
-      .nav-links a {
+      .nav-group {
+        display: grid;
+      }
+
+      .nav-group-links {
+        display: grid;
+        gap: 5px;
+      }
+
+      .nav-group-links a {
         text-decoration: none;
         color: #66584c;
         font-size: 0.9rem;
@@ -58,12 +82,12 @@ import { RouterModule } from '@angular/router';
           color 140ms ease;
       }
 
-      .nav-links a:hover {
+      .nav-group-links a:hover {
         background: rgba(143, 61, 42, 0.08);
         color: #6d291b;
       }
 
-      .nav-links a.active {
+      .nav-group-links a.active {
         background: rgba(143, 61, 42, 0.12);
         color: #6d291b;
         font-weight: 600;
@@ -81,9 +105,14 @@ import { RouterModule } from '@angular/router';
         .nav-links {
           width: 100%;
           justify-content: start;
+          gap: 12px;
         }
 
-        .nav-links a {
+        .nav-group {
+          width: 100%;
+        }
+
+        .nav-group-links a {
           flex: 1 1 auto;
           text-align: center;
         }

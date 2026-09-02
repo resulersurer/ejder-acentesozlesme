@@ -1,4 +1,5 @@
-import { CONTRACT_TEMPLATE, CONTRACT_VARIABLES, ContractVariableKey } from './contract-template';
+import { CONTRACT_VARIABLES, ContractVariableKey } from './contract-template';
+import { DEFAULT_CONTRACT_KIND, ContractKind, getContractKindConfig } from './contract-types';
 
 const TEMPLATE_STORAGE_KEY = 'ejder-contract-template';
 const SETTINGS_STORAGE_KEY = 'ejder-contract-variable-settings';
@@ -32,6 +33,12 @@ const defaultValueFor = (key: ContractVariableKey): string => {
   return '';
 };
 
+const getTemplateStorageKey = (kind: ContractKind): string =>
+  kind === DEFAULT_CONTRACT_KIND ? TEMPLATE_STORAGE_KEY : `${TEMPLATE_STORAGE_KEY}-${kind}`;
+
+const getSettingsStorageKey = (kind: ContractKind): string =>
+  kind === DEFAULT_CONTRACT_KIND ? SETTINGS_STORAGE_KEY : `${SETTINGS_STORAGE_KEY}-${kind}`;
+
 const getDefaultVariableSettings = (): VariableSettingsMap =>
   Object.fromEntries(
     CONTRACT_VARIABLES.map((variable) => [
@@ -45,33 +52,33 @@ const getDefaultVariableSettings = (): VariableSettingsMap =>
     ])
   );
 
-const readSettings = (): Partial<VariableSettingsMap> => {
+const readSettings = (kind: ContractKind): Partial<VariableSettingsMap> => {
   try {
-    return JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}') as Partial<VariableSettingsMap>;
+    return JSON.parse(localStorage.getItem(getSettingsStorageKey(kind)) || '{}') as Partial<VariableSettingsMap>;
   } catch {
     return {};
   }
 };
 
-export const getContractTemplate = (): string => {
+export const getContractTemplate = (kind: ContractKind = DEFAULT_CONTRACT_KIND): string => {
   try {
-    return localStorage.getItem(TEMPLATE_STORAGE_KEY) || CONTRACT_TEMPLATE;
+    return localStorage.getItem(getTemplateStorageKey(kind)) || getContractKindConfig(kind).template;
   } catch {
-    return CONTRACT_TEMPLATE;
+    return getContractKindConfig(kind).template;
   }
 };
 
-export const saveContractTemplate = (template: string): void => {
-  localStorage.setItem(TEMPLATE_STORAGE_KEY, template);
+export const saveContractTemplate = (template: string, kind: ContractKind = DEFAULT_CONTRACT_KIND): void => {
+  localStorage.setItem(getTemplateStorageKey(kind), template);
 };
 
-export const resetContractTemplate = (): void => {
-  localStorage.removeItem(TEMPLATE_STORAGE_KEY);
+export const resetContractTemplate = (kind: ContractKind = DEFAULT_CONTRACT_KIND): void => {
+  localStorage.removeItem(getTemplateStorageKey(kind));
 };
 
-export const getVariableSettings = (): VariableSettingsMap => {
+export const getVariableSettings = (kind: ContractKind = DEFAULT_CONTRACT_KIND): VariableSettingsMap => {
   const defaults = getDefaultVariableSettings();
-  const stored = readSettings();
+  const stored = readSettings(kind);
 
   return Object.fromEntries(
     CONTRACT_VARIABLES.map((variable) => [
@@ -85,10 +92,10 @@ export const getVariableSettings = (): VariableSettingsMap => {
   );
 };
 
-export const saveVariableSettings = (settings: VariableSettingsMap): void => {
-  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+export const saveVariableSettings = (settings: VariableSettingsMap, kind: ContractKind = DEFAULT_CONTRACT_KIND): void => {
+  localStorage.setItem(getSettingsStorageKey(kind), JSON.stringify(settings));
 };
 
-export const resetVariableSettings = (): void => {
-  localStorage.removeItem(SETTINGS_STORAGE_KEY);
+export const resetVariableSettings = (kind: ContractKind = DEFAULT_CONTRACT_KIND): void => {
+  localStorage.removeItem(getSettingsStorageKey(kind));
 };

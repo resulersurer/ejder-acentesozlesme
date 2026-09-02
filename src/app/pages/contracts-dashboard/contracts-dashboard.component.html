@@ -28,12 +28,12 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Sözleşme arşivi</p>
-      <h1>Dashboard</h1>
-      <p class="header-copy">Oluşturulan sözleşmeleri, imza durumlarını ve müşteri linklerini tek ekrandan takip et.</p>
+      <h1>{{ contractKindConfig.listLabel }}</h1>
+      <p class="header-copy">{{ contractKindConfig.label }} sözleşmelerini, imza durumlarını ve müşteri linklerini tek ekrandan takip et.</p>
     </div>
 
     <div class="header-actions">
-      <a class="primary-link" routerLink="/">Yeni sözleşme</a>
+      <a class="primary-link" [routerLink]="contractKindConfig.formPath">Yeni sözleşme</a>
       <button class="ghost-button" type="button" (click)="lockDashboard()">Kilitle</button>
     </div>
   </header>
@@ -41,7 +41,7 @@
   <section class="summary-grid">
     <div class="summary-item">
       <span>Toplam</span>
-      <strong>{{ contracts().length }}</strong>
+      <strong>{{ totalVisibleCount }}</strong>
     </div>
     <div class="summary-item signed">
       <span>Onaylanan</span>

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 export const DEFAULT_SENDER_SIGNATURE_IMAGE = 'assets/ejder-signature.png';
 
 export type ContractData = {
+  contractKind?: 'group-package' | 'individual-participation-group';
   senderName: string;
   agencyName: string;
   agencyContact: string;
