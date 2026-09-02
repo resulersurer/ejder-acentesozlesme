@@ -102,6 +102,14 @@
   letter-spacing: 0.08em;
 }
 
+.company-lockup img {
+  display: block;
+  width: 112px;
+  height: 52px;
+  object-fit: contain;
+  object-position: left center;
+}
+
 .company-lockup strong {
   font-size: 1.2rem;
 }

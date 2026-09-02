@@ -1,6 +1,8 @@
 const { neon } = require('@neondatabase/serverless');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
 
 const getSql = () => {
   const databaseUrl = process.env.DATABASE_URL;
@@ -47,6 +49,11 @@ const toBase64Buffer = (dataUrl) => {
   return Buffer.from(match[2], 'base64');
 };
 
+const getLogoBuffer = () => {
+  const logoPath = path.join(__dirname, '..', 'src', 'assets', 'ejder-logo.png');
+  return fs.existsSync(logoPath) ? fs.readFileSync(logoPath) : null;
+};
+
 const generateContractPdf = (payload) => {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
@@ -55,6 +62,12 @@ const generateContractPdf = (payload) => {
     doc.on('data', (chunk) => buffers.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(buffers)));
     doc.on('error', reject);
+
+    const logoBuffer = getLogoBuffer();
+    if (logoBuffer) {
+      doc.image(logoBuffer, { width: 150, height: 54, fit: [150, 54] });
+      doc.moveDown(0.8);
+    }
 
     const contractText = payload?.contractText || payload?.contractTemplate || '';
     const lines = String(contractText).split('\n');
