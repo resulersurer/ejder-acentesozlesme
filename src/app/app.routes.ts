@@ -5,8 +5,10 @@ import { AgencyFormComponent } from './pages/agency-form/agency-form.component';
 import { ContractsDashboardComponent } from './pages/contracts-dashboard/contracts-dashboard.component';
 import { TemplateEditorComponent } from './pages/template-editor/template-editor.component';
 import { ContractPdfComponent } from './pages/contract-pdf/contract-pdf.component';
+import { UnavailableComponent } from './pages/unavailable/unavailable.component';
 
-export const routes: Routes = [
+// Original pages are retained for when the application is reopened.
+export const applicationRoutes: Routes = [
   { path: '', component: SenderFormComponent, data: { contractKind: 'group-package' } },
   { path: 'grup-paket-listesi', component: ContractsDashboardComponent, data: { contractKind: 'group-package' } },
   {
@@ -25,4 +27,9 @@ export const routes: Routes = [
   { path: 'sign/:id', component: AgencyFormComponent },
   { path: 'pdf/:id', component: ContractPdfComponent },
   { path: '**', redirectTo: '' },
+];
+
+export const routes: Routes = [
+  { path: 'kullanima-kapali', component: UnavailableComponent },
+  { path: '**', redirectTo: 'kullanima-kapali' },
 ];
