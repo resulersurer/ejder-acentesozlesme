@@ -412,8 +412,4 @@ const handler = async (req, res) => {
   }
 };
 
-// Keep the original handler above, but deny all requests while the app is closed.
-module.exports = async (_req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.status(503).json({ message: 'Uygulama kullanıma kapalıdır' });
-};
+module.exports = handler;
